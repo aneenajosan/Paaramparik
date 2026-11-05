@@ -1,0 +1,251 @@
+{
+  "info": {
+    "name": "The Living Culture Map - Complete API Suite",
+    "_postman_id": "c1f7b8e0-1a2b-4c3d-8e4f-9a0b1c2d3e4f",
+    "description": "Complete collection for Event Creation, Contact OTP Verification, RAG Duplicate Detection, Filtering, Misinformation Reporting, and Admin Moderation.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4000/api",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Contact Verification (SMS & Email OTP)",
+      "item": [
+        {
+          "name": "Send Email OTP",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contactType\": \"EMAIL\",\n  \"contactValue\": \"organizer@festival.org\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/contact/send-otp", "host": ["{{baseUrl}}"], "path": ["contact", "send-otp"] }
+          }
+        },
+        {
+          "name": "Send Phone SMS OTP",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contactType\": \"PHONE\",\n  \"contactValue\": \"+91 9876543210\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/contact/send-otp", "host": ["{{baseUrl}}"], "path": ["contact", "send-otp"] }
+          }
+        },
+        {
+          "name": "Verify OTP Code",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contactType\": \"EMAIL\",\n  \"contactValue\": \"organizer@festival.org\",\n  \"otp\": \"123456\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/contact/verify-otp", "host": ["{{baseUrl}}"], "path": ["contact", "verify-otp"] }
+          }
+        },
+        {
+          "name": "Resend OTP",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contactType\": \"EMAIL\",\n  \"contactValue\": \"organizer@festival.org\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/contact/resend-otp", "host": ["{{baseUrl}}"], "path": ["contact", "resend-otp"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. RAG Duplicate Detection",
+      "item": [
+        {
+          "name": "Check Duplicate Event",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Traditional Music Festival\",\n  \"description\": \"An evening celebrating classical Sopana Sangeetham and percussion ensembles in Kunnamkulam.\",\n  \"artForm\": \"Music\",\n  \"eventType\": \"Festival\",\n  \"eventDate\": \"2026-11-20\",\n  \"locality\": \"Kunnamkulam\",\n  \"organizerName\": \"Kunnamkulam Heritage Society\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/events/check-duplicate", "host": ["{{baseUrl}}"], "path": ["events", "check-duplicate"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Cultural Event Submission",
+      "item": [
+        {
+          "name": "Create Event Submission (Complete)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Muringoor Folk Dance Gala\",\n  \"description\": \"An exceptional community celebration featuring rare Kaikottikali and Kolkali traditional folk dance styles.\",\n  \"culturalBackground\": \"Traditional agrarian harvest folk dances of central Kerala passed down through generations.\",\n  \"artForm\": \"Dance\",\n  \"eventType\": \"Performance\",\n  \"locality\": \"Chalakudy\",\n  \"neighborhood\": \"Muringoor\",\n  \"address\": \"Near River Bridge, Muringoor, Chalakudy, Kerala\",\n  \"latitude\": 10.312,\n  \"longitude\": 76.331,\n  \"eventDate\": \"2026-12-05\",\n  \"startTime\": \"17:00\",\n  \"endTime\": \"21:00\",\n  \"costType\": \"Free\",\n  \"organizerName\": \"Muringoor Arts Guild\",\n  \"organizerEmail\": \"organizer@muringoor.org\",\n  \"emailVerified\": true,\n  \"resources\": [\n    {\n      \"resourceTitle\": \"Official Festival Website\",\n      \"resourceType\": \"WEBSITE\",\n      \"resourceUrl\": \"https://muringoorfolkarts.org\",\n      \"description\": \"Schedule and artist lineup\"\n    }\n  ],\n  \"termsAccepted\": true,\n  \"termsVersion\": \"1.0\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/events", "host": ["{{baseUrl}}"], "path": ["events"] }
+          }
+        },
+        {
+          "name": "Get My Submissions",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": { "raw": "{{baseUrl}}/events/my-submissions", "host": ["{{baseUrl}}"], "path": ["events", "my-submissions"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Misinformation Reporting",
+      "item": [
+        {
+          "name": "Submit Report for Event",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reportCategory\": \"INCORRECT_DATE_OR_TIME\",\n  \"reportDescription\": \"The performance was moved to next weekend due to temple renovations.\",\n  \"evidenceUrl\": \"https://templetrust.org/bulletin\",\n  \"reporterContact\": \"community.informant@gmail.com\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/events/event_001/report", "host": ["{{baseUrl}}"], "path": ["events", "event_001", "report"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Admin Moderation & Reports",
+      "item": [
+        {
+          "name": "Get Pending Submissions",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/admin/events/pending", "host": ["{{baseUrl}}"], "path": ["admin", "events", "pending"] }
+          }
+        },
+        {
+          "name": "Approve Event",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Verified credentials and official circular. Approved and published.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/admin/events/event_001/approve", "host": ["{{baseUrl}}"], "path": ["admin", "events", "event_001", "approve"] }
+          }
+        },
+        {
+          "name": "Reject Event",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Insufficient supporting documentation for ritual performances. Please provide trust circular.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/admin/events/event_001/reject", "host": ["{{baseUrl}}"], "path": ["admin", "events", "event_001", "reject"] }
+          }
+        },
+        {
+          "name": "Get Misinformation Reports",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/admin/reports", "host": ["{{baseUrl}}"], "path": ["admin", "reports"] }
+          }
+        },
+        {
+          "name": "Update Report Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"RESOLVED\",\n  \"adminNotes\": \"Investigated and updated the listing time with organizer.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/admin/reports/rep_001", "host": ["{{baseUrl}}"], "path": ["admin", "reports", "rep_001"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Discovery & Filters",
+      "item": [
+        {
+          "name": "Filter by Art Form, Type, Cost, Date, Locality",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/events/filter?artForm=Music&eventType=Festival&cost=Free&date=2026-11-10&locality=Kunnamkulam", "host": ["{{baseUrl}}"], "path": ["events", "filter"] }
+          }
+        },
+        {
+          "name": "Geographical Radius Filter",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/events/filter?latitude=10.65&longitude=76.07&radius=10", "host": ["{{baseUrl}}"], "path": ["events", "filter"] }
+          }
+        },
+        {
+          "name": "Filter Options",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/events/filter-options", "host": ["{{baseUrl}}"], "path": ["events", "filter-options"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Authentication",
+      "item": [
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@livingculturemap.org\",\n  \"password\": \"Admin@123456\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        }
+      ]
+    }
+  ]
+}

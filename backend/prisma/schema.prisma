@@ -1,0 +1,259 @@
+// Prisma Schema for The Living Culture Map Backend
+// Supports PostgreSQL with vector embeddings, multi-criteria filtering, contact verification, and moderation
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ArtForm {
+  MUSIC
+  DANCE
+  THEATRE
+  VISUAL_ARTS
+  CRAFTS
+  LITERATURE
+  TRADITIONAL_RITUAL_ARTS
+  OTHER
+}
+
+enum EventType {
+  FESTIVAL
+  WORKSHOP
+  PERFORMANCE
+  EXHIBITION
+  CULTURAL_GATHERING
+  HERITAGE_EVENT
+  OTHER
+}
+
+enum CostType {
+  FREE
+  PAID
+  UNKNOWN
+}
+
+enum VerificationStatus {
+  VERIFIED
+  COMMUNITY_SUBMITTED
+  PENDING_VERIFICATION
+}
+
+enum PublicationStatus {
+  DRAFT
+  PENDING_REVIEW
+  PUBLISHED
+  REJECTED
+  ARCHIVED
+}
+
+enum UserRole {
+  USER
+  CONTRIBUTOR
+  ADMIN
+}
+
+enum ContactType {
+  PHONE
+  EMAIL
+}
+
+enum ResourceType {
+  INSTAGRAM
+  FACEBOOK
+  WEBSITE
+  REGISTRATION
+  YOUTUBE
+  GOVERNMENT
+  OTHER
+}
+
+enum ReportCategory {
+  EVENT_DOES_NOT_EXIST
+  INCORRECT_DATE_OR_TIME
+  INCORRECT_LOCATION
+  FAKE_ORGANIZER_OR_CONTACT
+  MISLEADING_CULTURAL_INFO
+  INCORRECT_DESCRIPTION
+  DUPLICATE_EVENT
+  BROKEN_REGISTRATION_LINK
+  OTHER
+}
+
+enum ReportStatus {
+  PENDING
+  UNDER_REVIEW
+  RESOLVED
+  DISMISSED
+}
+
+model Event {
+  id                 String             @id @default(uuid())
+  title              String
+  description        String             @db.Text
+  culturalBackground String?            @map("cultural_background") @db.Text
+  artForm            ArtForm            @map("art_form")
+  eventType          EventType          @map("event_type")
+  locality           String
+  neighborhood       String?
+  address            String?            @db.Text
+  latitude           Float
+  longitude          Float
+  eventDate          DateTime           @map("event_date")
+  eventEnd           DateTime?          @map("event_end")
+  startTime          String?            @map("start_time")
+  endTime            String?            @map("end_time")
+  costType           CostType           @default(UNKNOWN) @map("cost_type")
+  verificationStatus VerificationStatus @default(PENDING_VERIFICATION) @map("verification_status")
+  publicationStatus  PublicationStatus  @default(PUBLISHED) @map("publication_status")
+  organizerName      String?            @map("organizer_name")
+  organizerContact   String?            @map("organizer_contact")
+  organizerPhone     String?            @map("organizer_phone")
+  organizerEmail     String?            @map("organizer_email")
+  phoneVerified      Boolean            @default(false) @map("phone_verified")
+  emailVerified      Boolean            @default(false) @map("email_verified")
+  phoneVerifiedAt    DateTime?          @map("phone_verified_at")
+  emailVerifiedAt    DateTime?          @map("email_verified_at")
+  accessibility      String?            @db.Text
+  sourceUrl          String?            @map("source_url")
+  images             String[]           @default([])
+  contributorId      String?            @map("contributor_id")
+  contributor        User?              @relation(fields: [contributorId], references: [id], onDelete: SetNull)
+  createdAt          DateTime           @default(now()) @map("created_at")
+  updatedAt          DateTime           @updatedAt @map("updated_at")
+
+  // Relations
+  resources          EventResource[]
+  embedding          EventEmbedding?
+  reports            EventReport[]
+  termsAcceptances   TermsAcceptance[]
+  moderationLogs     ModerationLog[]
+
+  @@index([artForm])
+  @@index([eventType])
+  @@index([costType])
+  @@index([locality])
+  @@index([eventDate])
+  @@index([publicationStatus])
+  @@index([verificationStatus])
+  @@index([latitude, longitude])
+  @@index([contributorId])
+  @@map("events")
+}
+
+model User {
+  id               String            @id @default(uuid())
+  email            String            @unique
+  password         String
+  name             String?
+  role             UserRole          @default(USER)
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
+
+  events           Event[]
+  reports          EventReport[]
+  termsAcceptances TermsAcceptance[]
+  moderationLogs   ModerationLog[]
+
+  @@map("users")
+}
+
+model ContactVerification {
+  id            String      @id @default(uuid())
+  userId        String?     @map("user_id")
+  submissionRef String?     @map("submission_ref")
+  contactType   ContactType @map("contact_type")
+  contactValue  String      @map("contact_value")
+  otpHash       String      @map("otp_hash")
+  expiresAt     DateTime    @map("expires_at")
+  attempts      Int         @default(0)
+  verifiedAt    DateTime?   @map("verified_at")
+  createdAt     DateTime    @default(now()) @map("created_at")
+
+  @@index([contactValue, contactType])
+  @@index([submissionRef])
+  @@map("contact_verifications")
+}
+
+model EventResource {
+  id            String       @id @default(uuid())
+  eventId       String       @map("event_id")
+  event         Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  resourceTitle String       @map("resource_title")
+  resourceType  ResourceType @map("resource_type")
+  resourceUrl   String       @map("resource_url")
+  description   String?      @db.Text
+  createdAt     DateTime     @default(now()) @map("created_at")
+
+  @@index([eventId])
+  @@map("event_resources")
+}
+
+model EventEmbedding {
+  id             String   @id @default(uuid())
+  eventId        String   @unique @map("event_id")
+  event          Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  embeddingText  String   @map("embedding_text") @db.Text
+  embeddingModel String   @default("text-embedding-3-small") @map("embedding_model")
+  vectorData     Json?    @map("vector_data") // Stores normalized embedding float vector
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@map("event_embeddings")
+}
+
+model EventReport {
+  id                String         @id @default(uuid())
+  eventId           String         @map("event_id")
+  event             Event          @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  reporterId        String?        @map("reporter_id")
+  reporter          User?          @relation(fields: [reporterId], references: [id], onDelete: SetNull)
+  reportCategory    ReportCategory @map("report_category")
+  reportDescription String         @map("report_description") @db.Text
+  evidenceUrl       String?        @map("evidence_url")
+  reporterContact   String?        @map("reporter_contact")
+  status            ReportStatus   @default(PENDING)
+  adminNotes        String?        @map("admin_notes") @db.Text
+  resolvedAt        DateTime?      @map("resolved_at")
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @updatedAt @map("updated_at")
+
+  @@index([eventId])
+  @@index([status])
+  @@map("event_reports")
+}
+
+model TermsAcceptance {
+  id           String   @id @default(uuid())
+  userId       String   @map("user_id")
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  eventId      String   @map("event_id")
+  event        Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  termsVersion String   @default("1.0") @map("terms_version")
+  accepted     Boolean  @default(true)
+  acceptedAt   DateTime @default(now()) @map("accepted_at")
+
+  @@index([userId])
+  @@index([eventId])
+  @@map("terms_acceptances")
+}
+
+model ModerationLog {
+  id             String   @id @default(uuid())
+  eventId        String   @map("event_id")
+  event          Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  moderatorId    String   @map("moderator_id")
+  moderator      User     @relation(fields: [moderatorId], references: [id], onDelete: Cascade)
+  action         String
+  notes          String?  @db.Text
+  previousStatus String?  @map("previous_status")
+  newStatus      String?  @map("new_status")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@index([eventId])
+  @@index([moderatorId])
+  @@map("moderation_logs")
+}

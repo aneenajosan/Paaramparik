@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { ArrowLeft, ExternalLink, Mail, Phone, Globe, CalendarDays, Clock, MapPin, BookOpen } from 'lucide-react';
 import CultureMap from '@/components/map/CultureMap';
 import CoverArt from '@/components/listings/CoverArt';
+import ReportMisinformationModal from '@/components/listings/ReportMisinformationModal';
 import { TypeBadge, VerificationBadge } from '@/components/listings/Badges';
 import RelatedListings from '@/components/listings/RelatedListings';
 import DemoBanner from '@/components/listings/DemoBanner';
@@ -81,7 +82,14 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
                   {c.social && <li><a className="flex items-center gap-2 hover:text-saffron-500" href={c.social} target="_blank" rel="noopener noreferrer"><ExternalLink size={14} />Public profile</a></li>}
                   {listing.external_links?.map((l) => <li key={l.url}><a className="flex items-center gap-2 hover:text-saffron-500" href={l.url} target="_blank" rel="noopener noreferrer"><ExternalLink size={14} />{l.label}</a></li>)}
                 </ul>) : <p className="mt-3 text-sm text-cream-muted">No contact details have been verified for this listing. Contact details are never invented.</p>}</div>
-            <div className="card p-5 text-sm"><h2 className="text-lg">Spot a mistake?</h2><p className="mt-2 text-cream-muted">Contributors can submit a corrected listing with sources for review.</p><Link href="/contribute" className="btn-ghost mt-3 w-full">Contribute</Link></div>
+            <div className="card p-5 text-sm">
+              <h2 className="text-lg">Spot a mistake?</h2>
+              <p className="mt-2 text-cream-muted">Notice incorrect dates, location, or misleading descriptions?</p>
+              <div className="mt-3 space-y-2">
+                <ReportMisinformationModal eventId={listing.id} eventTitle={listing.title} />
+                <Link href="/contribute" className="btn-ghost block text-center w-full">Contribute an update</Link>
+              </div>
+            </div>
           </aside>
         </div>
       </div>

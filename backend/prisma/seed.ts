@@ -1,0 +1,257 @@
+import { PrismaClient, ArtForm, EventType, CostType, VerificationStatus, PublicationStatus, UserRole } from '@prisma/client';
+import bcrypt from 'bcryptjs';
+
+const prisma = new PrismaClient();
+
+export const seedEvents = [
+  {
+    id: 'event_001',
+    title: 'Traditional Music Festival',
+    description: 'An evening celebrating classical Sopana Sangeetham and traditional percussion ensembles in Kunnamkulam.',
+    culturalBackground: 'Rooted in central Kerala temple music and communal celebrations.',
+    artForm: ArtForm.MUSIC,
+    eventType: EventType.FESTIVAL,
+    locality: 'Kunnamkulam',
+    neighborhood: 'Bhavana Nagar',
+    latitude: 10.65,
+    longitude: 76.07,
+    eventDate: new Date('2026-11-10T18:00:00Z'),
+    startTime: '18:00',
+    endTime: '22:00',
+    costType: CostType.FREE,
+    verificationStatus: VerificationStatus.VERIFIED,
+    publicationStatus: PublicationStatus.PUBLISHED,
+    organizerName: 'Kunnamkulam Heritage Society',
+    organizerContact: 'contact@heritagekunnamkulam.org',
+    sourceUrl: 'https://en.wikipedia.org/wiki/Kunnamkulam',
+  },
+  {
+    id: 'event_002',
+    title: 'Kathakali All-Night Performance',
+    description: 'Classical Kathakali presentation of Nalacharitham with veteran maestros.',
+    culturalBackground: 'Classical dance-drama of Kerala known for elaborate costumes and mudras.',
+    artForm: ArtForm.DANCE,
+    eventType: EventType.PERFORMANCE,
+    locality: 'Kunnamkulam',
+    neighborhood: 'Guruvayur Road',
+    latitude: 10.648,
+    longitude: 76.072,
+    eventDate: new Date('2026-11-15T20:00:00Z'),
+    startTime: '20:00',
+    endTime: '04:00',
+    costType: CostType.FREE,
+    verificationStatus: VerificationStatus.VERIFIED,
+    publicationStatus: PublicationStatus.PUBLISHED,
+    organizerName: 'Kerala Kalamandalam Alumni Circle',
+    organizerContact: 'kalamandalam.circle@gmail.com',
+    sourceUrl: 'https://en.wikipedia.org/wiki/Kathakali',
+  },
+  {
+    id: 'event_003',
+    title: 'Panchavadyam Workshop & Demonstration',
+    description: 'Hands-on masterclass on the rhythmic structures of Timila, Maddalam, and Ilathalam.',
+    culturalBackground: 'Temple percussion orchestra native to Kerala.',
+    artForm: ArtForm.MUSIC,
+    eventType: EventType.WORKSHOP,
+    locality: 'Thrissur',
+    neighborhood: 'Round East',
+    latitude: 10.5276,
+    longitude: 76.2144,
+    eventDate: new Date('2026-11-20T10:00:00Z'),
+    startTime: '10:00',
+    endTime: '15:00',
+    costType: CostType.PAID,
+    verificationStatus: VerificationStatus.COMMUNITY_SUBMITTED,
+    publicationStatus: PublicationStatus.PUBLISHED,
+    organizerName: 'Thrissur Rhythm Collective',
+    organizerContact: 'info@thrissurrhythm.in',
+    sourceUrl: 'https://en.wikipedia.org/wiki/Panchavadyam',
+  },
+  {
+    id: 'event_004',
+    title: 'Mural Painting Heritage Exhibition',
+    description: 'Traditional Kerala natural pigment temple murals and contemporary interpretations.',
+    culturalBackground: 'Frescoes and mural paintings dating back from the 9th to 12th centuries.',
+    artForm: ArtForm.VISUAL_ARTS,
+    eventType: EventType.EXHIBITION,
+    locality: 'Thrissur',
+    neighborhood: 'Chembukkavu',
+    latitude: 10.531,
+    longitude: 76.22,
+    eventDate: new Date('2026-11-18T10:00:00Z'),
+    startTime: '10:00',
+    endTime: '19:00',
+    costType: CostType.FREE,
+    verificationStatus: VerificationStatus.VERIFIED,
+    publicationStatus: PublicationStatus.PUBLISHED,
+    organizerName: 'Lalit Kala Akademi Kerala',
+    organizerContact: 'keralalalitkala@gov.in',
+    sourceUrl: 'https://en.wikipedia.org/wiki/Kerala_mural_painting',
+  },
+  {
+    id: 'event_005',
+    title: 'Theyyam Ritual Invocation',
+    description: 'Sacred ritual dance form of Northern Malabar honoring ancestral spirits.',
+    culturalBackground: 'Ancient shamanic dance and ritual performance practiced for millennia.',
+    artForm: ArtForm.TRADITIONAL_RITUAL_ARTS,
+    eventType: EventType.HERITAGE_EVENT,
+    locality: 'Kannur',
+    neighborhood: 'Payyanur',
+    latitude: 12.102,
+    longitude: 75.201,
+    eventDate: new Date('2026-11-25T19:00:00Z'),
+    startTime: '19:00',
+    endTime: '06:00',
+    costType: CostType.FREE,
+    verificationStatus: VerificationStatus.VERIFIED,
+    publicationStatus: PublicationStatus.PUBLISHED,
+    organizerName: 'Malabar Traditional Arts Trust',
+    organizerContact: 'theyyam.trust@kerala.org',
+    sourceUrl: 'https://en.wikipedia.org/wiki/Theyyam',
+  },
+  {
+    id: 'event_006',
+    title: 'Koodiyattam Sanskrit Theatre Forum',
+    description: 'UNESCO recognized Intangible Heritage art form enactments and scholarly discussion.',
+    culturalBackground: 'Oldest living Sanskrit theatre tradition.',
+    artForm: ArtForm.THEATRE,
+    eventType: EventType.PERFORMANCE,
+    locality: 'Irinjalakuda',
+    neighborhood: 'Koodalmanikyam',
+    latitude: 10.344,
+    longitude: 76.208,
+    eventDate: new Date('2026-11-12T17:30:00Z'),
+    startTime: '17:30',
+    endTime: '21:00',
+    costType: CostType.PAID,
+    verificationStatus: VerificationStatus.VERIFIED,
+    publicationStatus: PublicationStatus.PUBLISHED,
+    organizerName: 'Margi & Natana Kairali',
+    organizerContact: 'natanakairali@gmail.com',
+    sourceUrl: 'https://en.wikipedia.org/wiki/Koodiyattam',
+  },
+  {
+    id: 'event_007',
+    title: 'Aranmula Metal Mirror Craft Showcase',
+    description: 'Demonstration of secret alloy metallurgy and bell-metal casting.',
+    culturalBackground: 'GI-tagged metallurgical marvel preserved by traditional artisan families.',
+    artForm: ArtForm.CRAFTS,
+    eventType: EventType.WORKSHOP,
+    locality: 'Aranmula',
+    neighborhood: 'Parthasarathy Environs',
+    latitude: 9.333,
+    longitude: 76.685,
+    eventDate: new Date('2026-11-08T09:30:00Z'),
+    startTime: '09:30',
+    endTime: '16:00',
+    costType: CostType.UNKNOWN,
+    verificationStatus: VerificationStatus.COMMUNITY_SUBMITTED,
+    publicationStatus: PublicationStatus.PUBLISHED,
+    organizerName: 'Viswakarma Artisans Guild',
+    organizerContact: 'crafts@aranmulakannadi.org',
+    sourceUrl: 'https://en.wikipedia.org/wiki/Aranmula_kannadi',
+  },
+  {
+    id: 'event_008',
+    title: 'Malayalam Poetry & Folklore Gathering',
+    description: 'Community reading of Vadakkan Pattukal and contemporary vernacular poetry.',
+    culturalBackground: 'Rich oral literature and ballads commemorating heroic warrior legends.',
+    artForm: ArtForm.LITERATURE,
+    eventType: EventType.CULTURAL_GATHERING,
+    locality: 'Kunnamkulam',
+    neighborhood: 'Town Hall',
+    latitude: 10.652,
+    longitude: 76.069,
+    eventDate: new Date('2026-11-05T16:00:00Z'), // Today!
+    startTime: '16:00',
+    endTime: '19:00',
+    costType: CostType.FREE,
+    verificationStatus: VerificationStatus.VERIFIED,
+    publicationStatus: PublicationStatus.PUBLISHED,
+    organizerName: 'Sahitya Sahridaya Sangham',
+    organizerContact: 'poetry@sahridaya.org',
+    sourceUrl: 'https://en.wikipedia.org/wiki/Malayalam_literature',
+  },
+  {
+    id: 'event_009',
+    title: 'Draft Community Folk Music Jam',
+    description: 'Unpublished rehearsal draft submitted for internal review.',
+    culturalBackground: 'Agrarian harvest songs.',
+    artForm: ArtForm.MUSIC,
+    eventType: EventType.CULTURAL_GATHERING,
+    locality: 'Thrissur',
+    neighborhood: 'Ayyanthole',
+    latitude: 10.53,
+    longitude: 76.19,
+    eventDate: new Date('2026-11-28T18:00:00Z'),
+    startTime: '18:00',
+    endTime: '20:00',
+    costType: CostType.FREE,
+    verificationStatus: VerificationStatus.PENDING_VERIFICATION,
+    publicationStatus: PublicationStatus.DRAFT,
+    organizerName: 'Community Volunteer',
+    organizerContact: 'draft@example.com',
+  },
+  {
+    id: 'event_010',
+    title: 'Historic Mohiniyattam Recital',
+    description: 'Archived archival performance documentation from last season.',
+    culturalBackground: 'Dance of the enchantress characterized by graceful feminine swaying.',
+    artForm: ArtForm.DANCE,
+    eventType: EventType.PERFORMANCE,
+    locality: 'Palakkad',
+    neighborhood: 'Fort Maidan',
+    latitude: 10.7867,
+    longitude: 76.6548,
+    eventDate: new Date('2026-09-15T18:30:00Z'),
+    startTime: '18:30',
+    endTime: '21:00',
+    costType: CostType.PAID,
+    verificationStatus: VerificationStatus.VERIFIED,
+    publicationStatus: PublicationStatus.ARCHIVED,
+    organizerName: 'Palakkad Arts Sabha',
+    organizerContact: 'arts@palakkad.org',
+    sourceUrl: 'https://en.wikipedia.org/wiki/Mohiniyattam',
+  }
+];
+
+export async function main() {
+  console.log('Seeding Living Culture Map database...');
+
+  // Create admin user
+  const hashedPassword = await bcrypt.hash('Admin@123456', 10);
+  const adminUser = await prisma.user.upsert({
+    where: { email: 'admin@livingculturemap.org' },
+    update: {},
+    create: {
+      email: 'admin@livingculturemap.org',
+      password: hashedPassword,
+      name: 'Culture Admin',
+      role: UserRole.ADMIN,
+    },
+  });
+  console.log('Admin user verified:', adminUser.email);
+
+  // Seed events
+  for (const event of seedEvents) {
+    await prisma.event.upsert({
+      where: { id: event.id },
+      update: event,
+      create: event,
+    });
+  }
+
+  console.log(`Successfully seeded ${seedEvents.length} events!`);
+}
+
+if (process.env.NODE_ENV !== 'test') {
+  main()
+    .catch((e) => {
+      console.error(e);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
+}
+

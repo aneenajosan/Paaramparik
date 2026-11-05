@@ -5,7 +5,13 @@ import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { requireAdmin } from '@/lib/admin';
 
 export const dynamic = 'force-dynamic';
-const NAV = [['/admin', 'Dashboard'], ['/admin/submissions', 'Submissions'], ['/admin/listings', 'Published listings'], ['/admin/contributors', 'Contributors']];
+const NAV = [
+  ['/admin', 'Dashboard'],
+  ['/admin/submissions', 'Submissions & Moderation'],
+  ['/admin/reports', 'Misinformation Reports'],
+  ['/admin/listings', 'Published listings'],
+  ['/admin/contributors', 'Contributors'],
+];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   if (!isSupabaseConfigured) return <ConfigNotice feature="The admin interface" />;

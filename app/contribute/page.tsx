@@ -1,18 +1,23 @@
 import { Suspense } from 'react';
-import ContributionForm from '@/components/forms/ContributionForm';
-import ConfigNotice from '@/components/ConfigNotice';
-import { isSupabaseConfigured } from '@/lib/supabase/config';
-import { createClient } from '@/lib/supabase/server';
-import { getCategories } from '@/lib/data';
-import { redirect } from 'next/navigation';
-export const metadata = { title: 'Contribute a listing' };
+import EventCreationWizard from '@/components/forms/EventCreationWizard';
+
+export const metadata = { title: 'Create Cultural Event — The Living Culture Map' };
 export const dynamic = 'force-dynamic';
-export default async function ContributePage({ searchParams }: { searchParams: Promise<{ edit?: string }> }) {
-  if (!isSupabaseConfigured) return <ConfigNotice feature="Contributing" />;
-  const { data: { user } } = await (await createClient()).auth.getUser();
-  if (!user) redirect('/login?next=/contribute');
-  const { edit } = await searchParams;
-  const categories = await getCategories();
-  return (<div className="container-page section max-w-3xl"><p className="eyebrow">Contribute</p><h1 className="mb-8 mt-1 text-4xl">{edit ? 'Edit your submission' : 'Add a cultural listing'}</h1>
-    <Suspense><ContributionForm categories={categories} editId={edit} /></Suspense></div>);
+
+export default async function ContributePage() {
+  return (
+    <div className="container-page section max-w-4xl">
+      <div className="mb-6 text-center">
+        <p className="eyebrow text-saffron-500 font-semibold tracking-wider">Community Submission</p>
+        <h1 className="mt-1 text-3xl sm:text-4xl font-bold font-display">Create a Cultural Event</h1>
+        <p className="mt-2 text-sm text-cream-muted max-w-xl mx-auto">
+          Share your traditional performances, temple festivals, workshops, and gatherings with the community.
+        </p>
+      </div>
+
+      <Suspense fallback={<p className="text-center text-cream-muted">Loading creation form...</p>}>
+        <EventCreationWizard />
+      </Suspense>
+    </div>
+  );
 }

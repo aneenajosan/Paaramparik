@@ -7,7 +7,13 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "seed:sql": "node scripts/generate-seed.mjs"
+    "seed:sql": "node scripts/generate-seed.mjs",
+    "backend:dev": "npm --prefix backend run dev",
+    "backend:build": "npm --prefix backend run build",
+    "backend:test": "npm --prefix backend run test",
+    "backend:seed": "npm --prefix backend run seed",
+    "backend:generate": "npm --prefix backend run prisma:generate",
+    "backend:push": "npm --prefix backend run prisma:push"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.2",

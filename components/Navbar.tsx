@@ -9,8 +9,10 @@ import { createClient } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
 
 const LINKS = [
-  { href: '/', label: 'Explore' }, { href: '/directory', label: 'Cultural Directory' },
-  { href: '/story', label: 'Story of the Day' }, { href: '/contribute', label: 'Contribute' },
+  { href: '/', label: 'Explore' },
+  { href: '/directory', label: 'Cultural Directory' },
+  { href: '/story', label: 'Story of the Day' },
+  { href: '/contribute', label: 'Create Event' },
 ];
 
 export default function Navbar() {
