@@ -130,13 +130,10 @@ export default function StartupAnimation({
       role="dialog"
       aria-modal="true"
       aria-label="The Living Culture Map Opening Animation"
-      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-crimson-950/95 backdrop-blur-md transition-opacity duration-700 ease-in-out ${
+      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#240006] transition-opacity duration-700 ease-in-out ${
         fading ? 'opacity-0 pointer-events-none' : 'opacity-100'
       }`}
     >
-      {/* Background radial gradient to complement mandala */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-saffron-950/40 via-crimson-950/90 to-black pointer-events-none" />
-
       {/* Top Header Bar */}
       <header className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-4 sm:p-6 select-none">
         <div className="flex items-center gap-2 text-saffron-500 font-display text-sm sm:text-base font-semibold tracking-wide">
@@ -170,8 +167,8 @@ export default function StartupAnimation({
         </div>
       </header>
 
-      {/* Video Container */}
-      <div className="relative w-full h-full flex items-center justify-center p-2 sm:p-8">
+      {/* Video Container - Seamlessly matched to #240006 background with soft feathering */}
+      <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
         <video
           ref={videoRef}
           src={src}
@@ -182,7 +179,11 @@ export default function StartupAnimation({
           onTimeUpdate={handleTimeUpdate}
           onEnded={handleDismiss}
           onError={handleDismiss}
-          className="w-full h-full object-contain max-h-[85vh] drop-shadow-[0_0_35px_rgba(224,96,0,0.25)] rounded-lg"
+          style={{
+            WebkitMaskImage: 'radial-gradient(ellipse 92% 92% at 50% 50%, black 72%, transparent 98%)',
+            maskImage: 'radial-gradient(ellipse 92% 92% at 50% 50%, black 72%, transparent 98%)',
+          }}
+          className="w-full h-full object-contain max-h-screen"
         />
       </div>
 
