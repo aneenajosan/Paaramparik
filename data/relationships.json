@@ -1,0 +1,72 @@
+[
+  {
+    "id": "rel-0",
+    "source_listing_id": "thrissur-pooram",
+    "related_listing_id": "vadakkunnathan-temple",
+    "relationship_type": "held_at",
+    "description": "The Pooram is held in the grounds around the temple."
+  },
+  {
+    "id": "rel-1",
+    "source_listing_id": "thrissur-pooram",
+    "related_listing_id": "panchavadyam",
+    "relationship_type": "features",
+    "description": "Percussion ensembles are central to the festival."
+  },
+  {
+    "id": "rel-2",
+    "source_listing_id": "thrissur-pooram",
+    "related_listing_id": "chenda",
+    "relationship_type": "features",
+    "description": "The chenda is a core instrument of festival percussion."
+  },
+  {
+    "id": "rel-3",
+    "source_listing_id": "thrissur-pooram",
+    "related_listing_id": "nettipattam-makers",
+    "relationship_type": "features",
+    "description": "Caparisons are worn by the festival elephants."
+  },
+  {
+    "id": "rel-4",
+    "source_listing_id": "thrissur-pooram",
+    "related_listing_id": "pulikali",
+    "relationship_type": "related_festival",
+    "description": "Both are signature public celebrations of Thrissur."
+  },
+  {
+    "id": "rel-5",
+    "source_listing_id": "kathakali",
+    "related_listing_id": "kerala-kalamandalam",
+    "relationship_type": "taught_at",
+    "description": "Kathakali is taught at Kerala Kalamandalam."
+  },
+  {
+    "id": "rel-6",
+    "source_listing_id": "koodiyattam",
+    "related_listing_id": "kerala-kalamandalam",
+    "relationship_type": "taught_at",
+    "description": "Koodiyattam is among the forms taught at Kerala Kalamandalam."
+  },
+  {
+    "id": "rel-7",
+    "source_listing_id": "koodiyattam",
+    "related_listing_id": "mizhavu",
+    "relationship_type": "accompanied_by",
+    "description": "The mizhavu drum accompanies Koodiyattam."
+  },
+  {
+    "id": "rel-8",
+    "source_listing_id": "kathakali",
+    "related_listing_id": "chenda",
+    "relationship_type": "accompanied_by",
+    "description": "The chenda is used in Kathakali performance."
+  },
+  {
+    "id": "rel-9",
+    "source_listing_id": "panchavadyam",
+    "related_listing_id": "chenda",
+    "relationship_type": "related_instrument",
+    "description": "Both are temple percussion traditions of Kerala."
+  }
+]

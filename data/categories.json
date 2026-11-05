@@ -1,0 +1,38 @@
+[
+  {
+    "id": "performing-arts",
+    "name": "Performing Arts",
+    "description": "Classical and folk dance, theatre and drama traditions",
+    "icon": null
+  },
+  {
+    "id": "music-percussion",
+    "name": "Music & Percussion",
+    "description": "Traditional instruments and ensembles",
+    "icon": null
+  },
+  {
+    "id": "visual-arts",
+    "name": "Visual Arts",
+    "description": "Painting and visual traditions",
+    "icon": null
+  },
+  {
+    "id": "crafts-textiles",
+    "name": "Crafts & Textiles",
+    "description": "Handmade crafts, weaving and ornament-making",
+    "icon": null
+  },
+  {
+    "id": "heritage-architecture",
+    "name": "Heritage & Architecture",
+    "description": "Historic temples, mosques and built heritage",
+    "icon": null
+  },
+  {
+    "id": "festivals-rituals",
+    "name": "Festivals & Rituals",
+    "description": "Annual festivals and ritual traditions",
+    "icon": null
+  }
+]
