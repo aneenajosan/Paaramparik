@@ -1,27 +1,105 @@
 import Link from 'next/link';
-import { MapPin, CalendarDays, Navigation } from 'lucide-react';
+import { MapPin, CalendarDays, Navigation, Clock } from 'lucide-react';
 import CoverArt from './CoverArt';
-import { TypeBadge, VerificationBadge } from './Badges';
+import FavoriteButton from './FavoriteButton';
+import { TYPE_META } from '@/lib/listing-meta';
 import { eventLabel } from '@/lib/utils';
 import type { Category, Listing } from '@/types';
 
-export default function ListingCard({ listing, category, distanceKm }: { listing: Listing; category?: Category; distanceKm?: number }) {
+export default function ListingCard({
+  listing,
+  category,
+  distanceKm,
+}: {
+  listing: Listing;
+  category?: Category;
+  distanceKm?: number;
+}) {
   const when = eventLabel(listing);
+  const typeMeta = TYPE_META[listing.listing_type];
+
+  // Determine cost display (from experience_type or participation_info or default free)
+  const isFree =
+    !listing.participation_info ||
+    listing.participation_info.toLowerCase().includes('free') ||
+    listing.experience_type === 'visit';
+
   return (
-    <article className="card flex flex-col transition-colors hover:border-saffron-500">
-      <Link href={`/listings/${listing.slug}`} className="flex flex-1 flex-col">
-        <CoverArt listing={listing} />
-        <div className="flex flex-1 flex-col gap-2 p-5">
-          <TypeBadge type={listing.listing_type} />
-          <h3 className="text-xl font-bold leading-snug">{listing.title}</h3>
-          <p className="flex items-center gap-1.5 text-sm text-cream-muted"><MapPin size={14} aria-hidden />{listing.location_name ?? listing.district}
-            {distanceKm !== undefined && <span className="ml-1 inline-flex items-center gap-1 text-saffron-500"><Navigation size={12} aria-hidden />{distanceKm.toFixed(1)} km</span>}</p>
-          {when && <p className="flex items-center gap-1.5 text-sm text-saffron-500"><CalendarDays size={14} aria-hidden />{when}</p>}
-          <p className="line-clamp-3 text-sm text-cream/90">{listing.description}</p>
-          <div className="mt-auto flex flex-wrap items-center gap-2 pt-3">
-            <VerificationBadge status={listing.verification_status} />
-            {category && <span className="text-xs text-cream-muted">{category.name}</span>}
+    <article className="group relative flex flex-col overflow-hidden rounded-xl border border-crimson-800/80 bg-crimson-900/50 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-saffron-500/80 hover:shadow-xl hover:shadow-crimson-950/60">
+      <div className="relative">
+        <CoverArt listing={listing} className="h-44 w-full" />
+
+        {/* Top-left category/type badge overlay */}
+        <div className="absolute top-3 left-3 z-10">
+          <span
+            className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-semibold backdrop-blur-md shadow-sm text-cream"
+            style={{ backgroundColor: `${typeMeta.color}dd` }}
+          >
+            <span>{typeMeta.glyph}</span>
+            <span>{typeMeta.label}</span>
+          </span>
+        </div>
+
+        {/* Top-right favorite button overlay */}
+        <FavoriteButton listingId={listing.id} />
+      </div>
+
+      <Link href={`/listings/${listing.slug}`} className="flex flex-1 flex-col p-4 sm:p-5">
+        <h3 className="font-display text-lg font-bold leading-snug text-cream transition-colors group-hover:text-saffron-400">
+          {listing.title}
+        </h3>
+
+        {/* Date & Time */}
+        <div className="mt-2.5 flex items-center gap-2 text-xs text-saffron-400">
+          <CalendarDays size={13} className="shrink-0" />
+          <span className="truncate">{when || 'Annual / Ongoing tradition'}</span>
+          {listing.event_start_time && (
+            <span className="flex items-center gap-1 text-cream-muted/70">
+              <Clock size={11} />
+              {listing.event_start_time.slice(0, 5)}
+            </span>
+          )}
+        </div>
+
+        {/* Location */}
+        <p className="mt-1.5 flex items-center gap-1.5 text-xs text-cream-muted">
+          <MapPin size={13} className="shrink-0 text-cream-muted/80" />
+          <span className="truncate">{listing.location_name ?? listing.district}</span>
+          {distanceKm !== undefined && (
+            <span className="ml-auto inline-flex items-center gap-1 font-medium text-saffron-500">
+              <Navigation size={11} />
+              {distanceKm.toFixed(1)} km
+            </span>
+          )}
+        </p>
+
+        {/* Short description */}
+        <p className="mt-3 line-clamp-2 text-xs leading-relaxed text-cream/80">
+          {listing.description}
+        </p>
+
+        {/* Bottom Tags & Cost */}
+        <div className="mt-auto flex flex-wrap items-center justify-between gap-2 pt-4 border-t border-crimson-800/40">
+          <div className="flex flex-wrap items-center gap-1.5">
+            {category && (
+              <span className="rounded bg-crimson-950/80 px-2 py-0.5 text-[11px] font-medium text-cream-muted">
+                {category.name.split('&')[0].trim()}
+              </span>
+            )}
+            <span className="rounded bg-crimson-950/80 px-2 py-0.5 text-[11px] font-medium text-cream-muted">
+              {listing.experience_type || 'Heritage'}
+            </span>
           </div>
+
+          <span
+            className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold ${
+              isFree
+                ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-800/60'
+                : 'bg-saffron-950/80 text-saffron-400 border border-saffron-800/60'
+            }`}
+          >
+            {isFree ? 'Free' : 'Ticketed'}
+          </span>
         </div>
       </Link>
     </article>
