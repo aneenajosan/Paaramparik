@@ -26,7 +26,7 @@
   .eyebrow { @apply text-xs font-semibold uppercase tracking-[0.18em] text-saffron-600; }
   .card { @apply border border-stone-200/90 bg-white shadow-sm hover:shadow-md transition-shadow; }
   .btn { @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50; }
-  .btn-primary { @apply btn bg-crimson-600 text-white hover:bg-crimson-700; }
+  .btn-primary { @apply btn bg-crimson-600 text-white hover:bg-crimson-800; }
   .btn-saffron { @apply btn bg-saffron-500 text-crimson-950 hover:bg-saffron-600 hover:text-white; }
   .btn-ghost { @apply btn border border-stone-300 text-[#240006] hover:bg-stone-100; }
   .input { @apply w-full border border-stone-300 bg-white px-3 py-2.5 text-sm text-[#240006] placeholder:text-stone-400 focus:border-saffron-500 focus:outline-none; }
