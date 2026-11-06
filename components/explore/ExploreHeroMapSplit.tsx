@@ -170,11 +170,11 @@ export default function ExploreHeroMapSplit({
           </div>
 
           {/* Right: Live Interactive Map with Full Clickable Filter Toolbar (7 cols on lg) */}
-          <div className="flex flex-col rounded-3xl border border-crimson-800 bg-crimson-950/90 shadow-2xl overflow-hidden lg:col-span-7">
+          <div className="relative flex flex-col rounded-3xl border border-crimson-800 bg-crimson-950/90 shadow-2xl lg:col-span-7">
             {/* Top Pill Filter Toolbar */}
             <div
               ref={toolbarRef}
-              className="flex flex-wrap items-center gap-2 p-3 sm:p-4 border-b border-crimson-800/80 bg-crimson-900/60 backdrop-blur-sm relative z-30"
+              className="flex flex-wrap items-center gap-2 p-3 sm:p-4 border-b border-crimson-800/80 bg-crimson-900/60 backdrop-blur-sm relative z-[1001] rounded-t-3xl"
             >
               {/* Clickable Filters Master Button */}
               <button
@@ -228,7 +228,7 @@ export default function ExploreHeroMapSplit({
                 </button>
 
                 {activeDropdown === 'artForm' && (
-                  <div className="absolute top-full left-0 z-50 mt-1.5 w-52 rounded-xl border border-crimson-700 bg-crimson-950 p-1.5 shadow-2xl max-h-60 overflow-y-auto">
+                  <div className="absolute top-full left-0 z-[1002] mt-1.5 w-52 rounded-xl border border-crimson-700 bg-crimson-950 p-1.5 shadow-2xl max-h-60 overflow-y-auto">
                     <button
                       type="button"
                       onClick={() => {
@@ -289,7 +289,7 @@ export default function ExploreHeroMapSplit({
                 </button>
 
                 {activeDropdown === 'location' && (
-                  <div className="absolute top-full left-0 z-50 mt-1.5 w-48 max-h-56 overflow-y-auto rounded-xl border border-crimson-700 bg-crimson-950 p-1.5 shadow-2xl">
+                  <div className="absolute top-full left-0 z-[1002] mt-1.5 w-48 max-h-56 overflow-y-auto rounded-xl border border-crimson-700 bg-crimson-950 p-1.5 shadow-2xl">
                     <button
                       type="button"
                       onClick={() => {
@@ -362,7 +362,7 @@ export default function ExploreHeroMapSplit({
                 </button>
 
                 {activeDropdown === 'date' && (
-                  <div className="absolute top-full left-0 z-50 mt-1.5 w-48 rounded-xl border border-crimson-700 bg-crimson-950 p-1.5 shadow-2xl">
+                  <div className="absolute top-full left-0 z-[1002] mt-1.5 w-48 rounded-xl border border-crimson-700 bg-crimson-950 p-1.5 shadow-2xl">
                     {[
                       { id: '', label: 'All Dates' },
                       { id: 'upcoming', label: 'Upcoming Events' },
@@ -434,7 +434,7 @@ export default function ExploreHeroMapSplit({
                 </button>
 
                 {activeDropdown === 'experience' && (
-                  <div className="absolute top-full left-0 z-50 mt-1.5 w-48 rounded-xl border border-crimson-700 bg-crimson-950 p-1.5 shadow-2xl">
+                  <div className="absolute top-full left-0 z-[1002] mt-1.5 w-48 rounded-xl border border-crimson-700 bg-crimson-950 p-1.5 shadow-2xl">
                     <button
                       type="button"
                       onClick={() => {
@@ -497,7 +497,7 @@ export default function ExploreHeroMapSplit({
                 </button>
 
                 {activeDropdown === 'cost' && (
-                  <div className="absolute top-full left-0 z-50 mt-1.5 w-44 rounded-xl border border-crimson-700 bg-crimson-950 p-1.5 shadow-2xl">
+                  <div className="absolute top-full left-0 z-[1002] mt-1.5 w-44 rounded-xl border border-crimson-700 bg-crimson-950 p-1.5 shadow-2xl">
                     <button
                       type="button"
                       onClick={() => {
@@ -550,7 +550,7 @@ export default function ExploreHeroMapSplit({
             </div>
 
             {/* Interactive Map */}
-            <div className="relative h-[360px] sm:h-[420px] w-full">
+            <div className="relative h-[360px] sm:h-[420px] w-full overflow-hidden rounded-b-3xl z-10">
               <CultureMap listings={listings} user={userPosition} height="100%" scrollZoom={false} />
             </div>
           </div>

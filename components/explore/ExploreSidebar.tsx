@@ -193,14 +193,17 @@ export default function ExploreSidebar({
               )}
             </button>
 
-            <button
-              type="button"
-              onClick={() => {
-                handleTypeClick('directory');
+            <Link
+              href="/directory"
+              onClick={(e) => {
+                if (pathname === '/explore') {
+                  e.preventDefault();
+                  handleTypeClick('directory');
+                }
                 onClose();
               }}
-              className={`w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
-                activeType === 'directory' || pathname === '/directory'
+              className={`flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
+                pathname === '/directory' || activeType === 'directory'
                   ? 'bg-saffron-500 text-crimson-950 font-bold shadow-sm'
                   : 'text-cream/90 hover:bg-crimson-900/50 hover:text-cream'
               }`}
@@ -210,7 +213,7 @@ export default function ExploreSidebar({
                 <span>Cultural Directory</span>
               </div>
               <span className="text-[10px] font-bold uppercase tracking-wider opacity-75">View</span>
-            </button>
+            </Link>
 
             <div className="px-4 py-3 rounded-lg bg-crimson-900/40 border border-crimson-800/50 text-xs text-cream-muted/90">
               <div className="flex items-center gap-1.5 font-bold text-saffron-400 mb-1">

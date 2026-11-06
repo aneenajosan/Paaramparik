@@ -7,5 +7,15 @@ const Inner = dynamic(() => import('./CultureMapInner'), {
   loading: () => <div className="flex h-[420px] items-center justify-center bg-crimson-900 text-sm text-cream-muted" role="status">Loading map…</div>,
 });
 export default function CultureMap(props: CultureMapProps) {
-  return <div className="overflow-hidden border border-crimson-800"><Inner {...props} /></div>;
+  return (
+    <div
+      className="overflow-hidden border border-crimson-800 w-full h-full"
+      style={{
+        height: props.height || '100%',
+        minHeight: props.height && props.height !== '100%' ? props.height : '360px',
+      }}
+    >
+      <Inner {...props} />
+    </div>
+  );
 }

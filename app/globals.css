@@ -1,3 +1,5 @@
+@import 'leaflet/dist/leaflet.css';
+
 @font-face {
   font-family: 'Samarkan';
   src: url('/fonts/samarkan.woff2') format('woff2'),
@@ -40,7 +42,16 @@
 }
 
 /* Leaflet */
-.leaflet-container { font-family: inherit; background: #240006; }
+.leaflet-container {
+  font-family: inherit;
+  background: #240006;
+  cursor: grab !important;
+  user-select: none;
+}
+.leaflet-container:active,
+.leaflet-dragging .leaflet-container {
+  cursor: grabbing !important;
+}
 .leaflet-popup-content-wrapper, .leaflet-popup-tip { background: #240006; color: #F6EBDD; border-radius: 2px; }
 .leaflet-popup-content { margin: 12px 14px; }
 .leaflet-container a.leaflet-popup-close-button { color: #F6EBDD; }

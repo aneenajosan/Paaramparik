@@ -34,18 +34,20 @@ export default function Explorer({
   categories,
   defaultView = 'grid',
   initialQuery = '',
+  isDirectoryPage = false,
 }: {
   listings: Listing[];
   categories: Category[];
   defaultView?: 'map' | 'grid' | 'list';
   initialQuery?: string;
+  isDirectoryPage?: boolean;
 }) {
   const [f, setF] = useState<Filters>({ ...EMPTY_FILTERS, q: initialQuery });
-  const [view, setView] = useState<'map' | 'grid' | 'list'>(defaultView);
+  const [view, setView] = useState<'map' | 'grid' | 'list'>(isDirectoryPage ? 'list' : defaultView);
   const [sort, setSort] = useState<Sort>('relevance');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [savedCount, setSavedCount] = useState(0);
-  const [activeSidebarType, setActiveSidebarType] = useState<string>('');
+  const [activeSidebarType, setActiveSidebarType] = useState<string>(isDirectoryPage ? 'directory' : '');
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
 
   const { position, status, locate } = useGeolocation();
@@ -258,18 +260,31 @@ export default function Explorer({
 
         {/* Dashboard Main Scrollable Area */}
         <main className="flex-1 space-y-10 p-4 sm:p-8 max-w-7xl mx-auto w-full">
-          {/* Section 1: Hero Spotlight & Interactive Map Split */}
-          <ExploreHeroMapSplit
-            listings={results}
-            totalListingsCount={listings.length}
-            categories={categories}
-            filters={f}
-            onFilterChange={setFilter}
-            onResetFilters={clearAllFilters}
-            userPosition={position}
-            onLocate={locate}
-            locateStatus={status}
-          />
+          {isDirectoryPage ? (
+            /* Dedicated Cultural Directory Header */
+            <div className="rounded-3xl border border-crimson-800 bg-gradient-to-br from-crimson-950 via-crimson-900 to-crimson-950 p-6 sm:p-10 shadow-xl space-y-3">
+              <p className="eyebrow !text-saffron-500">Paaramparik Cultural Archive</p>
+              <h1 className="font-display text-3xl sm:text-5xl font-bold text-cream">
+                Cultural Directory
+              </h1>
+              <p className="text-sm leading-relaxed text-cream-muted max-w-2xl">
+                Explore verified heritage places, master artists, traditional performances, craft workshops and seasonal festivals across Kerala. Filter by art form, location, or experience.
+              </p>
+            </div>
+          ) : (
+            /* Section 1: Hero Spotlight & Interactive Map Split */
+            <ExploreHeroMapSplit
+              listings={results}
+              totalListingsCount={listings.length}
+              categories={categories}
+              filters={f}
+              onFilterChange={setFilter}
+              onResetFilters={clearAllFilters}
+              userPosition={position}
+              onLocate={locate}
+              locateStatus={status}
+            />
+          )}
 
           {/* Section 2: Featured Events & Traditions Row (Influenced by Reference Grid) */}
           <section className="space-y-4" aria-label="Featured Cultural Events">

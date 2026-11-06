@@ -8,7 +8,7 @@ export default async function DirectoryPage() {
   return (
     <>
       {source === 'demo' && <DemoBanner />}
-      <Explorer listings={listings} categories={categories} defaultView="list" />
+      <Explorer listings={listings} categories={categories} defaultView="list" isDirectoryPage={true} />
     </>
   );
 }
