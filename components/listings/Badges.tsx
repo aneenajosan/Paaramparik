@@ -12,8 +12,8 @@ const V_ICON = { verified: BadgeCheck, demo: FlaskConical, under_review: Clock, 
 export function VerificationBadge({ status }: { status: VerificationStatus }) {
   const Icon = V_ICON[status];
   return (
-    <span className={cn('inline-flex items-center gap-1.5 border px-2 py-0.5 text-xs font-semibold',
-      status === 'verified' ? 'border-saffron-500 text-saffron-500' : 'border-cream/30 text-cream-muted')}>
+    <span className={cn('inline-flex items-center gap-1.5 border px-2 py-0.5 text-xs font-semibold rounded',
+      status === 'verified' ? 'border-saffron-600 text-saffron-700 bg-saffron-50' : 'border-stone-300 text-stone-600 bg-stone-50')}>
       <Icon size={12} aria-hidden />{VERIFICATION_LABEL[status]}
     </span>
   );

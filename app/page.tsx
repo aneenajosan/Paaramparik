@@ -48,27 +48,29 @@ export default async function Home() {
       </section>
 
       <section className="section container-page">
-        <div className="mb-6 flex items-end justify-between gap-4"><div><p className="eyebrow">The map</p><h2 className="mt-1 text-3xl"><span className="font-samarkan text-3xl text-saffron-400 mr-2 font-normal">Paaramparik</span>Cultural Map</h2></div><Link href="/explore" className="hidden items-center gap-1 text-sm font-semibold text-saffron-500 sm:flex">Open full map <ArrowRight size={14} /></Link></div>
-        <CultureMap listings={listings} height="420px" scrollZoom={false} />
+        <div className="mb-6 flex items-end justify-between gap-4"><div><p className="eyebrow !text-saffron-600">The map</p><h2 className="mt-1 text-3xl font-display font-bold text-crimson-950"><span className="font-samarkan text-3xl text-saffron-600 mr-2 font-normal">Paaramparik</span>Cultural Map</h2></div><Link href="/explore" className="hidden items-center gap-1 text-sm font-semibold text-saffron-600 sm:flex">Open full map <ArrowRight size={14} /></Link></div>
+        <div className="rounded-2xl overflow-hidden border border-stone-200 shadow-sm">
+          <CultureMap listings={listings} height="420px" scrollZoom={false} />
+        </div>
       </section>
 
-      <section className="container-page"><div className="mb-6"><p className="eyebrow">Featured</p><h2 className="mt-1 text-3xl">Featured experiences</h2></div>
-        {featured.length ? <ListingGrid listings={featured} categories={categories} /> : <p className="text-cream-muted">No listings have been published yet.</p>}</section>
+      <section className="container-page"><div className="mb-6"><p className="eyebrow !text-saffron-600">Featured</p><h2 className="mt-1 text-3xl font-display font-bold text-crimson-950">Featured experiences</h2></div>
+        {featured.length ? <ListingGrid listings={featured} categories={categories} /> : <p className="text-stone-500">No listings have been published yet.</p>}</section>
 
-      <section className="section container-page"><div className="mb-6"><p className="eyebrow">Close to you</p><h2 className="mt-1 text-3xl">Nearby cultural experiences</h2></div>
+      <section className="section container-page"><div className="mb-6"><p className="eyebrow !text-saffron-600">Close to you</p><h2 className="mt-1 text-3xl font-display font-bold text-crimson-950">Nearby cultural experiences</h2></div>
         <NearbyListings listings={listings} categories={categories} /></section>
 
-      <section className="container-page"><div className="mb-6"><p className="eyebrow">Events & festivals</p><h2 className="mt-1 text-3xl">{upcoming.length ? 'Upcoming cultural events' : 'Annual festivals'}</h2>
-        {!upcoming.length && <p className="mt-2 max-w-2xl text-sm text-cream-muted">No events with confirmed dates are listed yet, so these are recurring festivals whose dates must be checked with organisers.</p>}</div>
+      <section className="container-page"><div className="mb-6"><p className="eyebrow !text-saffron-600">Events & festivals</p><h2 className="mt-1 text-3xl font-display font-bold text-crimson-950">{upcoming.length ? 'Upcoming cultural events' : 'Annual festivals'}</h2>
+        {!upcoming.length && <p className="mt-2 max-w-2xl text-sm text-stone-500">No events with confirmed dates are listed yet, so these are recurring festivals whose dates must be checked with organisers.</p>}</div>
         {events.length ? <ul className="grid gap-4 sm:grid-cols-2">{events.slice(0, 4).map((l) => (
-          <li key={l.id}><Link href={`/listings/${l.slug}`} className="card flex h-full items-start justify-between gap-4 p-5 hover:border-saffron-500"><span><span className="block font-display text-xl font-bold">{l.title}</span><span className="mt-1 block text-sm text-cream-muted">{l.location_name}</span></span><span className="shrink-0 border border-saffron-500 px-2 py-1 text-xs font-semibold text-saffron-500">{eventLabel(l)}</span></Link></li>))}</ul>
-          : <div className="card p-8 text-center text-cream-muted">No events listed yet. Know of one? <Link href="/contribute" className="font-semibold text-saffron-500 underline">Contribute it.</Link></div>}</section>
+          <li key={l.id}><Link href={`/listings/${l.slug}`} className="card flex h-full items-start justify-between gap-4 p-5 hover:border-saffron-500 rounded-xl"><span><span className="block font-display text-xl font-bold text-crimson-950">{l.title}</span><span className="mt-1 block text-sm text-stone-500">{l.location_name}</span></span><span className="shrink-0 border border-saffron-500/70 bg-saffron-50 px-2 py-1 text-xs font-semibold text-saffron-700 rounded">{eventLabel(l)}</span></Link></li>))}</ul>
+          : <div className="card p-8 text-center text-stone-500 rounded-xl">No events listed yet. Know of one? <Link href="/contribute" className="font-semibold text-saffron-600 underline">Contribute it.</Link></div>}</section>
 
       {story && <section className="section container-page"><StoryOfTheDay listing={story} /></section>}
 
-      <section className="container-page"><div className="bg-plum-800 p-8 md:p-12 md:flex md:items-center md:justify-between md:gap-8">
-        <div className="max-w-xl"><p className="eyebrow !text-cream">Community</p><h2 className="mt-2 text-3xl">Know a tradition that deserves to be found?</h2><p className="mt-3 text-cream/90">Submit a place, artist, workshop or practice with your sources. A reviewer checks every submission before it appears on the map.</p></div>
-        <Link href="/contribute" className="btn-saffron mt-6 md:mt-0">Contribute a listing <ArrowRight size={16} /></Link></div></section>
+      <section className="container-page pb-12"><div className="rounded-2xl overflow-hidden bg-gradient-to-r from-crimson-950 via-crimson-900 to-saffron-950 p-8 md:p-12 md:flex md:items-center md:justify-between md:gap-8 text-cream shadow-xl border border-saffron-600/30">
+        <div className="max-w-xl"><p className="eyebrow !text-saffron-400">Community</p><h2 className="mt-2 text-3xl font-bold text-cream font-display">Know a tradition that deserves to be found?</h2><p className="mt-3 text-cream/90 leading-relaxed">Submit a place, artist, workshop or practice with your sources. A reviewer checks every submission before it appears on the map.</p></div>
+        <Link href="/contribute" className="btn-saffron mt-6 md:mt-0 shadow-lg">Contribute a listing <ArrowRight size={16} /></Link></div></section>
     </>
   );
 }

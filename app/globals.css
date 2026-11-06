@@ -13,8 +13,8 @@
 
 @layer base {
   html { scroll-behavior: smooth; }
-  body { @apply bg-crimson-950 text-cream font-sans antialiased; }
-  h1, h2, h3, h4 { @apply font-display tracking-tight; }
+  body { @apply bg-[#FAF7F2] text-[#240006] font-sans antialiased; }
+  h1, h2, h3, h4 { @apply font-display tracking-tight text-[#240006]; }
   a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
     @apply outline outline-2 outline-offset-2 outline-saffron-500;
   }
@@ -23,16 +23,16 @@
 @layer components {
   .container-page { @apply mx-auto w-full max-w-6xl px-4 sm:px-6; }
   .section { @apply py-section; }
-  .eyebrow { @apply text-xs font-semibold uppercase tracking-[0.18em] text-saffron-500; }
-  .card { @apply border border-crimson-800 bg-crimson-900/60; }
+  .eyebrow { @apply text-xs font-semibold uppercase tracking-[0.18em] text-saffron-600; }
+  .card { @apply border border-stone-200/90 bg-white shadow-sm hover:shadow-md transition-shadow; }
   .btn { @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50; }
-  .btn-primary { @apply btn bg-crimson-500 text-cream hover:bg-crimson-600; }
-  .btn-saffron { @apply btn bg-saffron-500 text-crimson-950 hover:bg-saffron-600 hover:text-cream; }
-  .btn-ghost { @apply btn border border-cream/30 text-cream hover:bg-cream/10; }
-  .input { @apply w-full border border-crimson-800 bg-crimson-950 px-3 py-2.5 text-sm text-cream placeholder:text-cream-muted/60; }
-  .label { @apply mb-1.5 block text-sm font-semibold text-cream; }
-  .hint { @apply mt-1 text-xs text-cream-muted; }
-  .error-text { @apply mt-1 text-xs font-semibold text-saffron-500; }
+  .btn-primary { @apply btn bg-crimson-600 text-white hover:bg-crimson-700; }
+  .btn-saffron { @apply btn bg-saffron-500 text-crimson-950 hover:bg-saffron-600 hover:text-white; }
+  .btn-ghost { @apply btn border border-stone-300 text-[#240006] hover:bg-stone-100; }
+  .input { @apply w-full border border-stone-300 bg-white px-3 py-2.5 text-sm text-[#240006] placeholder:text-stone-400 focus:border-saffron-500 focus:outline-none; }
+  .label { @apply mb-1.5 block text-sm font-semibold text-[#240006]; }
+  .hint { @apply mt-1 text-xs text-stone-500; }
+  .error-text { @apply mt-1 text-xs font-semibold text-crimson-600; }
   /* Subtle nod to the Kerala kasavu border: a woven stripe band. */
   .kasavu { height: 6px; background:
     repeating-linear-gradient(90deg, #E06000 0 14px, transparent 14px 18px),
@@ -40,9 +40,9 @@
 }
 
 /* Leaflet */
-.leaflet-container { font-family: inherit; background: #240006; }
-.leaflet-popup-content-wrapper, .leaflet-popup-tip { background: #240006; color: #F6EBDD; border-radius: 2px; }
+.leaflet-container { font-family: inherit; background: #F2ECE1; }
+.leaflet-popup-content-wrapper, .leaflet-popup-tip { background: #FFFFFF; color: #240006; border-radius: 6px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
 .leaflet-popup-content { margin: 12px 14px; }
-.leaflet-container a.leaflet-popup-close-button { color: #F6EBDD; }
-.lcm-marker { display:flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:50% 50% 50% 0; transform:rotate(-45deg); border:2px solid #F6EBDD; color:#F6EBDD; font-weight:700; font-size:12px; box-shadow:0 2px 6px rgba(0,0,0,.5); }
+.leaflet-container a.leaflet-popup-close-button { color: #240006; }
+.lcm-marker { display:flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:50% 50% 50% 0; transform:rotate(-45deg); border:2px solid #FFFFFF; color:#FFFFFF; font-weight:700; font-size:12px; box-shadow:0 2px 6px rgba(0,0,0,.35); }
 .lcm-marker > span { transform: rotate(45deg); }

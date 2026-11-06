@@ -149,15 +149,15 @@ export default function ExploreHeroMapSplit({
         </div>
 
         {/* Right: Live Interactive Map with Pill Filter Toolbar (7 cols on lg) */}
-        <div className="flex flex-col rounded-3xl border border-crimson-800 bg-crimson-950/90 shadow-2xl overflow-hidden lg:col-span-7">
+        <div className="flex flex-col rounded-3xl border border-stone-200/90 bg-white shadow-md overflow-hidden lg:col-span-7">
           {/* Top Pill Filter Toolbar */}
-          <div className="flex flex-wrap items-center gap-2 p-3 sm:p-4 border-b border-crimson-800/80 bg-crimson-900/60 backdrop-blur-sm">
+          <div className="flex flex-wrap items-center gap-2 p-3 sm:p-4 border-b border-stone-200 bg-[#FAF7F2] backdrop-blur-sm">
             {/* Filter Toggle Button */}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-crimson-950 border border-crimson-700/80 text-xs font-semibold text-cream">
-              <SlidersHorizontal size={13} className="text-saffron-400" />
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-stone-300 text-xs font-semibold text-stone-800 shadow-2xs">
+              <SlidersHorizontal size={13} className="text-saffron-600" />
               <span>Filters</span>
               {activeFilterCount > 0 && (
-                <span className="flex h-4 w-4 items-center justify-center rounded-full bg-saffron-500 text-[10px] font-bold text-crimson-950">
+                <span className="flex h-4 w-4 items-center justify-center rounded-full bg-saffron-500 text-[10px] font-bold text-white">
                   {activeFilterCount}
                 </span>
               )}
@@ -168,10 +168,10 @@ export default function ExploreHeroMapSplit({
               <button
                 type="button"
                 onClick={() => toggleDropdown('artForm')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition-colors ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition-colors shadow-2xs ${
                   filters.category
-                    ? 'border-saffron-500 bg-saffron-950/60 text-saffron-400'
-                    : 'border-crimson-800 bg-crimson-950/80 text-cream-muted hover:text-cream hover:border-crimson-700'
+                    ? 'border-saffron-500 bg-saffron-50 text-saffron-800 font-semibold'
+                    : 'border-stone-300 bg-white text-stone-700 hover:text-stone-900 hover:border-stone-400'
                 }`}
               >
                 <span>
@@ -183,14 +183,14 @@ export default function ExploreHeroMapSplit({
               </button>
 
               {activeDropdown === 'artForm' && (
-                <div className="absolute top-full left-0 z-50 mt-1.5 w-48 rounded-xl border border-crimson-700 bg-crimson-950 p-1.5 shadow-2xl">
+                <div className="absolute top-full left-0 z-50 mt-1.5 w-48 rounded-xl border border-stone-200 bg-white p-1.5 shadow-2xl text-stone-800">
                   <button
                     type="button"
                     onClick={() => {
                       onFilterChange('category', '');
                       setActiveDropdown(null);
                     }}
-                    className="w-full text-left px-3 py-1.5 text-xs rounded-lg hover:bg-crimson-900 text-cream"
+                    className="w-full text-left px-3 py-1.5 text-xs rounded-lg hover:bg-stone-50 text-stone-800"
                   >
                     All Art Forms
                   </button>
@@ -202,10 +202,10 @@ export default function ExploreHeroMapSplit({
                         onFilterChange('category', c.id);
                         setActiveDropdown(null);
                       }}
-                      className={`w-full text-left px-3 py-1.5 text-xs rounded-lg hover:bg-crimson-900 transition-colors ${
+                      className={`w-full text-left px-3 py-1.5 text-xs rounded-lg hover:bg-stone-50 transition-colors ${
                         filters.category === c.id
-                          ? 'text-saffron-400 font-bold bg-crimson-900/50'
-                          : 'text-cream'
+                          ? 'text-saffron-800 font-bold bg-saffron-50'
+                          : 'text-stone-800'
                       }`}
                     >
                       {c.name}
@@ -220,26 +220,26 @@ export default function ExploreHeroMapSplit({
               <button
                 type="button"
                 onClick={() => toggleDropdown('location')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition-colors ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition-colors shadow-2xs ${
                   filters.location
-                    ? 'border-saffron-500 bg-saffron-950/60 text-saffron-400'
-                    : 'border-crimson-800 bg-crimson-950/80 text-cream-muted hover:text-cream hover:border-crimson-700'
+                    ? 'border-saffron-500 bg-saffron-50 text-saffron-800 font-semibold'
+                    : 'border-stone-300 bg-white text-stone-700 hover:text-stone-900 hover:border-stone-400'
                 }`}
               >
-                <MapPin size={11} />
+                <MapPin size={11} className="text-saffron-600" />
                 <span>{filters.location || 'Location'}</span>
                 <ChevronDown size={12} />
               </button>
 
               {activeDropdown === 'location' && (
-                <div className="absolute top-full left-0 z-50 mt-1.5 w-48 max-h-56 overflow-y-auto rounded-xl border border-crimson-700 bg-crimson-950 p-1.5 shadow-2xl">
+                <div className="absolute top-full left-0 z-50 mt-1.5 w-48 max-h-56 overflow-y-auto rounded-xl border border-stone-200 bg-white p-1.5 shadow-2xl text-stone-800">
                   <button
                     type="button"
                     onClick={() => {
                       onFilterChange('location', '');
                       setActiveDropdown(null);
                     }}
-                    className="w-full text-left px-3 py-1.5 text-xs rounded-lg hover:bg-crimson-900 text-cream"
+                    className="w-full text-left px-3 py-1.5 text-xs rounded-lg hover:bg-stone-50 text-stone-800"
                   >
                     All Locations
                   </button>
@@ -251,10 +251,10 @@ export default function ExploreHeroMapSplit({
                         onFilterChange('location', loc);
                         setActiveDropdown(null);
                       }}
-                      className={`w-full text-left px-3 py-1.5 text-xs rounded-lg hover:bg-crimson-900 transition-colors ${
+                      className={`w-full text-left px-3 py-1.5 text-xs rounded-lg hover:bg-stone-50 transition-colors ${
                         filters.location === loc
-                          ? 'text-saffron-400 font-bold bg-crimson-900/50'
-                          : 'text-cream'
+                          ? 'text-saffron-800 font-bold bg-saffron-50'
+                          : 'text-stone-800'
                       }`}
                     >
                       {loc}
@@ -269,13 +269,13 @@ export default function ExploreHeroMapSplit({
               <button
                 type="button"
                 onClick={() => toggleDropdown('experience')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition-colors ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition-colors shadow-2xs ${
                   filters.experience
-                    ? 'border-saffron-500 bg-saffron-950/60 text-saffron-400'
-                    : 'border-crimson-800 bg-crimson-950/80 text-cream-muted hover:text-cream hover:border-crimson-700'
+                    ? 'border-saffron-500 bg-saffron-50 text-saffron-800 font-semibold'
+                    : 'border-stone-300 bg-white text-stone-700 hover:text-stone-900 hover:border-stone-400'
                 }`}
               >
-                <Layers size={11} />
+                <Layers size={11} className="text-saffron-600" />
                 <span>
                   {filters.experience
                     ? EXPERIENCE_LABEL[filters.experience as keyof typeof EXPERIENCE_LABEL] ||
@@ -286,14 +286,14 @@ export default function ExploreHeroMapSplit({
               </button>
 
               {activeDropdown === 'experience' && (
-                <div className="absolute top-full left-0 z-50 mt-1.5 w-48 rounded-xl border border-crimson-700 bg-crimson-950 p-1.5 shadow-2xl">
+                <div className="absolute top-full left-0 z-50 mt-1.5 w-48 rounded-xl border border-stone-200 bg-white p-1.5 shadow-2xl text-stone-800">
                   <button
                     type="button"
                     onClick={() => {
                       onFilterChange('experience', '');
                       setActiveDropdown(null);
                     }}
-                    className="w-full text-left px-3 py-1.5 text-xs rounded-lg hover:bg-crimson-900 text-cream"
+                    className="w-full text-left px-3 py-1.5 text-xs rounded-lg hover:bg-stone-50 text-stone-800"
                   >
                     Any Experience
                   </button>
@@ -305,10 +305,10 @@ export default function ExploreHeroMapSplit({
                         onFilterChange('experience', k);
                         setActiveDropdown(null);
                       }}
-                      className={`w-full text-left px-3 py-1.5 text-xs rounded-lg hover:bg-crimson-900 transition-colors ${
+                      className={`w-full text-left px-3 py-1.5 text-xs rounded-lg hover:bg-stone-50 transition-colors ${
                         filters.experience === k
-                          ? 'text-saffron-400 font-bold bg-crimson-900/50'
-                          : 'text-cream'
+                          ? 'text-saffron-800 font-bold bg-saffron-50'
+                          : 'text-stone-800'
                       }`}
                     >
                       {v}
@@ -323,7 +323,7 @@ export default function ExploreHeroMapSplit({
               <button
                 type="button"
                 onClick={onResetFilters}
-                className="flex items-center gap-1 text-xs text-saffron-400 hover:text-saffron-300 ml-auto font-medium"
+                className="flex items-center gap-1 text-xs text-saffron-600 hover:text-saffron-700 ml-auto font-semibold"
               >
                 <X size={12} />
                 <span>Reset</span>
@@ -340,3 +340,4 @@ export default function ExploreHeroMapSplit({
     </section>
   );
 }
+

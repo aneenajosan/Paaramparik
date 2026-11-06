@@ -74,14 +74,14 @@ export default function CategoryPillGrid({
   return (
     <section className="space-y-3" aria-label="Explore by Category">
       <div className="flex items-center justify-between">
-        <h2 className="font-display text-xl sm:text-2xl font-bold text-cream">
+        <h2 className="font-display text-xl sm:text-2xl font-bold text-crimson-950">
           Explore by Category
         </h2>
         {selectedCategory && (
           <button
             type="button"
             onClick={() => onSelectCategory('')}
-            className="text-xs font-semibold text-saffron-400 hover:text-saffron-300 underline underline-offset-4"
+            className="text-xs font-semibold text-saffron-600 hover:text-saffron-700 underline underline-offset-4"
           >
             Show All Categories
           </button>
@@ -92,9 +92,9 @@ export default function CategoryPillGrid({
         {categories.map((cat) => {
           const theme = CATEGORY_THEMES[cat.id] || {
             icon: Users,
-            bg: 'bg-crimson-800/40 hover:bg-crimson-800/60',
-            text: 'text-saffron-400',
-            border: 'border-crimson-700',
+            bg: 'bg-stone-100 hover:bg-stone-200',
+            text: 'text-stone-700',
+            border: 'border-stone-200',
             label: cat.name,
           };
           const Icon = theme.icon;
@@ -107,8 +107,8 @@ export default function CategoryPillGrid({
               onClick={() => onSelectCategory(isSelected ? '' : cat.id)}
               className={`group flex min-w-[130px] flex-col items-center gap-2.5 rounded-2xl border p-4 text-center transition-all duration-200 hover:-translate-y-0.5 ${
                 isSelected
-                  ? 'border-saffron-400 bg-crimson-900 shadow-md shadow-saffron-500/10 scale-105'
-                  : 'border-crimson-800/80 bg-crimson-950/70 hover:border-crimson-700 hover:bg-crimson-900/40'
+                  ? 'border-saffron-500 bg-saffron-50/80 shadow-md ring-2 ring-saffron-400/30 scale-105'
+                  : 'border-stone-200/90 bg-white shadow-xs hover:border-stone-300 hover:shadow-md hover:bg-stone-50/50'
               }`}
             >
               <div
@@ -118,7 +118,7 @@ export default function CategoryPillGrid({
               </div>
               <span
                 className={`text-xs font-semibold leading-tight line-clamp-1 ${
-                  isSelected ? 'text-saffron-400' : 'text-cream/90 group-hover:text-cream'
+                  isSelected ? 'text-saffron-800 font-bold' : 'text-stone-700 group-hover:text-crimson-950'
                 }`}
               >
                 {theme.label}
@@ -130,3 +130,4 @@ export default function CategoryPillGrid({
     </section>
   );
 }
+

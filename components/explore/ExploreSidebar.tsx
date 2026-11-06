@@ -60,7 +60,7 @@ export default function ExploreSidebar({
       >
         {/* Brand Header */}
         <div className="flex h-20 items-center justify-between px-6 border-b border-crimson-900/60">
-          <Logo />
+          <Logo variant="light" />
           <button
             type="button"
             onClick={onClose}
@@ -213,3 +213,4 @@ export default function ExploreSidebar({
     </>
   );
 }
+

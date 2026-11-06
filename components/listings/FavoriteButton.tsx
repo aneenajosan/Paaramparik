@@ -59,3 +59,4 @@ export default function FavoriteButton({ listingId }: { listingId: string }) {
     </button>
   );
 }
+

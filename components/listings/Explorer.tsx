@@ -152,7 +152,7 @@ export default function Explorer({
   }, [f, activeSidebarType]);
 
   return (
-    <div className="flex min-h-screen bg-crimson-950 text-cream">
+    <div className="flex min-h-screen bg-[#FAF7F2] text-crimson-950">
       {/* Left Sidebar Navigation (Influenced by Reference Dashboard) */}
       <ExploreSidebar
         isOpen={sidebarOpen}
@@ -165,12 +165,12 @@ export default function Explorer({
       {/* Main Explore Content Stream */}
       <div className="flex-1 min-w-0 flex flex-col">
         {/* Top Floating Dashboard Bar */}
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b border-crimson-800/80 bg-crimson-950/95 px-4 sm:px-8 backdrop-blur">
+        <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b border-stone-200/90 bg-[#FAF7F2]/95 px-4 sm:px-8 backdrop-blur">
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => setSidebarOpen(true)}
-              className="rounded-lg p-2 text-cream-muted hover:bg-crimson-900/60 hover:text-cream lg:hidden"
+              className="rounded-lg p-2 text-stone-600 hover:bg-stone-200/60 hover:text-stone-900 lg:hidden"
               aria-label="Open navigation menu"
             >
               <Menu size={20} />
@@ -180,7 +180,7 @@ export default function Explorer({
             <div className="relative w-48 sm:w-80">
               <Search
                 size={16}
-                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-cream-muted"
+                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone-400"
                 aria-hidden
               />
               <input
@@ -188,7 +188,7 @@ export default function Explorer({
                 value={f.q}
                 onChange={(e) => setFilter('q', e.target.value)}
                 placeholder="Search traditions, places, artists…"
-                className="w-full rounded-full border border-crimson-800/80 bg-crimson-900/60 py-2 pl-9 pr-4 text-xs text-cream placeholder:text-cream-muted/60 focus:border-saffron-400 focus:outline-none"
+                className="w-full rounded-full border border-stone-300 bg-white py-2 pl-9 pr-4 text-xs text-crimson-950 placeholder:text-stone-400 focus:border-saffron-500 focus:outline-none shadow-2xs"
                 aria-label="Quick search"
               />
             </div>
@@ -198,31 +198,31 @@ export default function Explorer({
           <nav className="hidden md:flex items-center gap-1" aria-label="Explore Top Nav">
             <Link
               href="/"
-              className="px-3 py-1.5 rounded-full text-xs font-semibold text-cream-muted hover:text-saffron-400 hover:bg-crimson-900/40 transition-colors"
+              className="px-3 py-1.5 rounded-full text-xs font-semibold text-stone-600 hover:text-crimson-700 hover:bg-stone-200/40 transition-colors"
             >
               Home
             </Link>
             <Link
               href="/explore"
-              className="px-3 py-1.5 rounded-full text-xs font-semibold text-saffron-400 bg-crimson-900/80 border border-crimson-800"
+              className="px-3 py-1.5 rounded-full text-xs font-semibold text-crimson-800 bg-stone-200/80 border border-stone-300"
             >
               Explore
             </Link>
             <Link
               href="/story"
-              className="px-3 py-1.5 rounded-full text-xs font-semibold text-cream-muted hover:text-saffron-400 hover:bg-crimson-900/40 transition-colors"
+              className="px-3 py-1.5 rounded-full text-xs font-semibold text-stone-600 hover:text-crimson-700 hover:bg-stone-200/40 transition-colors"
             >
               Stories
             </Link>
             <Link
               href="/contribute"
-              className="px-3 py-1.5 rounded-full text-xs font-semibold text-cream-muted hover:text-saffron-400 hover:bg-crimson-900/40 transition-colors"
+              className="px-3 py-1.5 rounded-full text-xs font-semibold text-stone-600 hover:text-crimson-700 hover:bg-stone-200/40 transition-colors"
             >
               Create Event
             </Link>
             <Link
               href="/directory"
-              className="px-3 py-1.5 rounded-full text-xs font-semibold text-cream-muted hover:text-saffron-400 hover:bg-crimson-900/40 transition-colors"
+              className="px-3 py-1.5 rounded-full text-xs font-semibold text-stone-600 hover:text-crimson-700 hover:bg-stone-200/40 transition-colors"
             >
               Directory
             </Link>
@@ -234,10 +234,10 @@ export default function Explorer({
               type="button"
               onClick={locate}
               disabled={status === 'loading'}
-              className="flex items-center gap-1.5 rounded-full border border-crimson-700/80 bg-crimson-900/50 px-3 py-1.5 text-xs font-semibold text-cream hover:bg-crimson-800/60 transition-colors"
+              className="flex items-center gap-1.5 rounded-full border border-stone-300 bg-white px-3 py-1.5 text-xs font-semibold text-stone-700 hover:bg-stone-100 transition-colors shadow-2xs"
               title="Detect nearby traditions using geolocation"
             >
-              <LocateFixed size={13} className="text-saffron-400" />
+              <LocateFixed size={13} className="text-saffron-600" />
               <span className="hidden sm:inline">
                 {status === 'granted' ? 'Nearby' : status === 'loading' ? 'Locating…' : 'Near me'}
               </span>
@@ -263,8 +263,8 @@ export default function Explorer({
           <section className="space-y-4" aria-label="Featured Cultural Events">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="font-display text-2xl font-bold text-cream">Featured Events</h2>
-                <p className="text-xs text-cream-muted mt-0.5">
+                <h2 className="font-display text-2xl font-bold text-crimson-950">Featured Events</h2>
+                <p className="text-xs text-stone-500 mt-0.5">
                   Handpicked authentic rituals, masterclass workshops and seasonal festivals
                 </p>
               </div>
@@ -272,7 +272,7 @@ export default function Explorer({
               <button
                 type="button"
                 onClick={() => handleSelectQuickType('event')}
-                className="text-xs font-bold text-saffron-400 hover:text-saffron-300 transition-colors"
+                className="text-xs font-bold text-saffron-600 hover:text-saffron-700 transition-colors"
               >
                 View all events →
               </button>
@@ -306,56 +306,56 @@ export default function Explorer({
             {/* Left Column (8 cols): Filterable Listings Stream */}
             <section className="space-y-4 lg:col-span-8" aria-label="Browse Traditions">
               {/* Toolbar & Filter Meta */}
-              <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-crimson-800/80 bg-crimson-900/40 p-4">
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-stone-200/90 bg-white p-4 shadow-sm">
                 <div>
-                  <h3 className="font-display text-lg font-bold text-cream">
+                  <h3 className="font-display text-lg font-bold text-crimson-950">
                     {activeSidebarType === 'saved'
                       ? 'Saved Traditions'
                       : f.category
                       ? categories.find((c) => c.id === f.category)?.name
                       : 'All Cultural Listings'}
                   </h3>
-                  <p className="text-xs text-cream-muted mt-0.5">
-                    Showing <strong className="text-saffron-400">{results.length}</strong> of{' '}
+                  <p className="text-xs text-stone-500 mt-0.5">
+                    Showing <strong className="text-saffron-600 font-bold">{results.length}</strong> of{' '}
                     {listings.length} traditions
                   </p>
                 </div>
 
                 <div className="flex items-center gap-2">
                   {/* Sort Dropdown */}
-                  <div className="flex items-center gap-1.5 rounded-lg border border-crimson-700/80 bg-crimson-950 px-2.5 py-1.5 text-xs text-cream">
-                    <ArrowUpDown size={12} className="text-saffron-400" />
+                  <div className="flex items-center gap-1.5 rounded-lg border border-stone-300 bg-white px-2.5 py-1.5 text-xs text-stone-800 shadow-2xs">
+                    <ArrowUpDown size={12} className="text-saffron-600" />
                     <select
                       id="results-sort"
                       value={sort}
                       onChange={(e) => setSort(e.target.value as Sort)}
-                      className="bg-transparent text-xs text-cream focus:outline-none cursor-pointer"
+                      className="bg-transparent text-xs text-stone-800 focus:outline-none cursor-pointer"
                     >
-                      <option value="relevance" className="bg-crimson-950 text-cream">
+                      <option value="relevance" className="bg-white text-stone-800">
                         Relevance
                       </option>
                       <option
                         value="distance"
                         disabled={!position}
-                        className="bg-crimson-950 text-cream"
+                        className="bg-white text-stone-800"
                       >
                         Distance {position ? '' : '(Near me required)'}
                       </option>
-                      <option value="date" className="bg-crimson-950 text-cream">
+                      <option value="date" className="bg-white text-stone-800">
                         Upcoming Date
                       </option>
                     </select>
                   </div>
 
                   {/* View Switcher (Grid / Map / List) */}
-                  <div className="flex rounded-lg border border-crimson-800 bg-crimson-950 p-0.5">
+                  <div className="flex rounded-lg border border-stone-200 bg-stone-100 p-0.5">
                     <button
                       type="button"
                       onClick={() => setView('grid')}
                       className={`p-1.5 rounded-md transition-colors ${
                         view === 'grid'
-                          ? 'bg-saffron-500 text-crimson-950 font-bold'
-                          : 'text-cream-muted hover:text-cream'
+                          ? 'bg-saffron-500 text-crimson-950 font-bold shadow-2xs'
+                          : 'text-stone-500 hover:text-stone-900'
                       }`}
                       title="Grid view"
                       aria-label="Grid view"
@@ -367,8 +367,8 @@ export default function Explorer({
                       onClick={() => setView('map')}
                       className={`p-1.5 rounded-md transition-colors ${
                         view === 'map'
-                          ? 'bg-saffron-500 text-crimson-950 font-bold'
-                          : 'text-cream-muted hover:text-cream'
+                          ? 'bg-saffron-500 text-crimson-950 font-bold shadow-2xs'
+                          : 'text-stone-500 hover:text-stone-900'
                       }`}
                       title="Map view"
                       aria-label="Map view"
@@ -380,8 +380,8 @@ export default function Explorer({
                       onClick={() => setView('list')}
                       className={`p-1.5 rounded-md transition-colors ${
                         view === 'list'
-                          ? 'bg-saffron-500 text-crimson-950 font-bold'
-                          : 'text-cream-muted hover:text-cream'
+                          ? 'bg-saffron-500 text-crimson-950 font-bold shadow-2xs'
+                          : 'text-stone-500 hover:text-stone-900'
                       }`}
                       title="List view"
                       aria-label="List view"
@@ -394,24 +394,24 @@ export default function Explorer({
 
               {/* Empty Results State */}
               {results.length === 0 ? (
-                <div className="rounded-2xl border border-crimson-800 bg-crimson-900/40 p-12 text-center">
-                  <h3 className="font-display text-2xl font-bold text-cream">
+                <div className="rounded-2xl border border-stone-200 bg-white p-12 text-center shadow-sm">
+                  <h3 className="font-display text-2xl font-bold text-crimson-950">
                     No matching cultural traditions found
                   </h3>
-                  <p className="mt-2 text-sm text-cream-muted max-w-md mx-auto">
+                  <p className="mt-2 text-sm text-stone-500 max-w-md mx-auto">
                     Try adjusting your filters or search keywords to discover more Kerala cultural
                     events and heritage sites.
                   </p>
                   <button
                     type="button"
                     onClick={clearAllFilters}
-                    className="mt-6 rounded-full bg-saffron-500 hover:bg-saffron-400 text-crimson-950 font-bold px-6 py-2.5 text-xs transition-colors"
+                    className="mt-6 rounded-full bg-saffron-500 hover:bg-saffron-400 text-crimson-950 font-bold px-6 py-2.5 text-xs transition-colors shadow-sm"
                   >
                     Clear All Filters
                   </button>
                 </div>
               ) : view === 'map' ? (
-                <div className="rounded-2xl overflow-hidden border border-crimson-800 bg-crimson-950">
+                <div className="rounded-2xl overflow-hidden border border-stone-200 bg-white shadow-sm">
                   <CultureMap listings={results} user={position} height="480px" />
                 </div>
               ) : view === 'grid' ? (

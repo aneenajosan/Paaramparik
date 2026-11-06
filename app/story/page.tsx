@@ -10,8 +10,8 @@ export default async function StoryPage() {
   const story = storyOfTheDay(listings);
   return (<>{source === 'demo' && <DemoBanner />}
     <div className="container-page section">
-      <p className="eyebrow">Today</p><h1 className="mb-8 mt-1 text-4xl">Cultural Story of the Day</h1>
-      {story ? <StoryOfTheDay listing={story} full /> : <p className="text-cream-muted">Nothing is published yet.</p>}
-      {story && <><h2 className="mb-6 mt-16 text-2xl">More to discover</h2><ListingGrid listings={listings.filter((l) => l.id !== story.id).slice(0, 6)} categories={categories} /></>}
+      <p className="eyebrow !text-saffron-600">Today</p><h1 className="mb-8 mt-1 text-4xl font-display font-bold text-crimson-950">Cultural Story of the Day</h1>
+      {story ? <StoryOfTheDay listing={story} full /> : <p className="text-stone-500">Nothing is published yet.</p>}
+      {story && <><h2 className="mb-6 mt-16 text-2xl font-display font-bold text-crimson-950">More to discover</h2><ListingGrid listings={listings.filter((l) => l.id !== story.id).slice(0, 6)} categories={categories} /></>}
     </div></>);
 }
