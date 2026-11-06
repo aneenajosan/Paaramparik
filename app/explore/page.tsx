@@ -7,6 +7,10 @@ export default async function ExplorePage({ searchParams }: { searchParams: Prom
   const { q } = await searchParams;
   const [{ listings, source }, categories] = await Promise.all([getPublishedListings(), getCategories()]);
   return (<>{source === 'demo' && <DemoBanner />}
-    <div className="container-page pt-10"><p className="eyebrow">Explore</p><h1 className="mt-1 text-4xl">The cultural map</h1></div>
+    <div className="container-page pt-10">
+      <p className="eyebrow">Explore</p>
+      <h1 className="mt-1 font-samarkan text-5xl sm:text-6xl text-saffron-400 tracking-wide">Paaramparik</h1>
+      <p className="mt-2 text-cream-muted text-sm max-w-xl">Explore traditional art forms, rituals, heritage places and cultural gatherings across the region.</p>
+    </div>
     <Explorer listings={listings} categories={categories} defaultView="map" initialQuery={q ?? ''} /></>);
 }

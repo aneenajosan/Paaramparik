@@ -1,4 +1,4 @@
--- The Living Culture Map — schema, RLS and moderation function.
+-- Paaramparik — schema, RLS and moderation function.
 -- Run in Supabase SQL editor (or `supabase db push`).
 create extension if not exists postgis;
 create extension if not exists pgcrypto;

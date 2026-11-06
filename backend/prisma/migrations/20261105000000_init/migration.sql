@@ -1,5 +1,5 @@
 -- Migration: 20261105000000_init
--- Complete Database schema for The Living Culture Map (PostgreSQL)
+-- Complete Database schema for Paaramparik (PostgreSQL)
 -- Includes Cultural Event Filtering, Contact OTP Verification, RAG Embeddings,
 -- Misinformation Reporting, Terms Acceptance, and Admin Moderation.
 

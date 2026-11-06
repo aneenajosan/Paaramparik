@@ -1,4 +1,4 @@
-# The Living Culture Map — Backend Service
+# Paaramparik — Backend Service
 
 A high-performance REST API service for cultural event discovery and multi-criteria filtering, built with **Node.js**, **Express.js**, **TypeScript**, **PostgreSQL**, **Prisma ORM**, and **Zod**.
 

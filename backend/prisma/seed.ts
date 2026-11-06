@@ -216,7 +216,7 @@ export const seedEvents = [
 ];
 
 export async function main() {
-  console.log('Seeding Living Culture Map database...');
+  console.log('Seeding Paaramparik database...');
 
   // Create admin user
   const hashedPassword = await bcrypt.hash('Admin@123456', 10);

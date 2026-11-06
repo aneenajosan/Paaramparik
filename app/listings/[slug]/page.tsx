@@ -58,7 +58,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
             <CultureMap listings={[listing]} height="300px" scrollZoom={false} />
 
             <H>Sources & verification</H>
-            {listing.verification_status !== 'verified' && <p className="mb-3 border border-saffron-500/50 bg-saffron-950 p-3 text-sm text-cream-muted">This listing has not been reviewed by a Living Culture Map administrator. Treat it as a starting point and check the sources.</p>}
+            {listing.verification_status !== 'verified' && <p className="mb-3 border border-saffron-500/50 bg-saffron-950 p-3 text-sm text-cream-muted">This listing has not been reviewed by a Paaramparik administrator. Treat it as a starting point and check the sources.</p>}
             {listing.sources?.length ? <ul className="space-y-3">{listing.sources.map((s) => (
               <li key={s.source_url} className="card p-4"><a href={s.source_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 font-semibold text-saffron-500 hover:underline"><BookOpen size={14} />{s.source_name}<ExternalLink size={12} /></a>
                 {s.description && <p className="mt-1 text-sm text-cream-muted">{s.description}</p>}</li>))}</ul> : <p className="text-sm text-cream-muted">No sources recorded.</p>}

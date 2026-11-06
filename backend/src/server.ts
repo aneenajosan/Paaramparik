@@ -4,7 +4,7 @@ import { disconnectPrisma } from './config/database';
 
 const server = app.listen(env.PORT, () => {
   console.log(`=======================================================`);
-  console.log(` The Living Culture Map - Backend API Server`);
+  console.log(` Paaramparik - Backend API Server`);
   console.log(` Server running on: http://localhost:${env.PORT}`);
   console.log(` Health check:      http://localhost:${env.PORT}/api/health`);
   console.log(` Event Filters:     http://localhost:${env.PORT}/api/events/filter`);

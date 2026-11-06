@@ -26,7 +26,12 @@ export default async function Home() {
         <div className="container-page grid gap-10 py-16 md:grid-cols-[1.3fr_1fr] md:py-24">
           <div>
             <p className="eyebrow !text-saffron-500">Discover · Understand · Contribute</p>
-            <h1 className="mt-3 text-4xl font-bold leading-[1.1] sm:text-6xl">Culture lives beyond the tourist trail.</h1>
+            <h1 className="mt-3 text-4xl font-bold leading-[1.1] sm:text-6xl">
+              <span className="font-samarkan block text-5xl sm:text-7xl md:text-8xl text-saffron-400 mb-2 tracking-wide font-normal">
+                Paaramparik
+              </span>
+              Culture lives beyond the tourist trail.
+            </h1>
             <p className="mt-5 max-w-xl text-lg text-cream/90">Find the temples, performances, crafts and festivals your district has kept alive — with the stories, sources and people behind them.</p>
             <form action="/explore" className="mt-8 flex max-w-xl" role="search">
               <label htmlFor="hero-q" className="sr-only">Search cultural experiences</label>
@@ -43,7 +48,7 @@ export default async function Home() {
       </section>
 
       <section className="section container-page">
-        <div className="mb-6 flex items-end justify-between gap-4"><div><p className="eyebrow">The map</p><h2 className="mt-1 text-3xl">Cultural discovery map</h2></div><Link href="/explore" className="hidden items-center gap-1 text-sm font-semibold text-saffron-500 sm:flex">Open full map <ArrowRight size={14} /></Link></div>
+        <div className="mb-6 flex items-end justify-between gap-4"><div><p className="eyebrow">The map</p><h2 className="mt-1 text-3xl"><span className="font-samarkan text-3xl text-saffron-400 mr-2 font-normal">Paaramparik</span>Cultural Map</h2></div><Link href="/explore" className="hidden items-center gap-1 text-sm font-semibold text-saffron-500 sm:flex">Open full map <ArrowRight size={14} /></Link></div>
         <CultureMap listings={listings} height="420px" scrollZoom={false} />
       </section>
 

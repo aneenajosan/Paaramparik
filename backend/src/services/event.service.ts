@@ -292,7 +292,7 @@ export class EventService {
     });
 
     if (duplicateCheck.isDuplicate) {
-      throw new Error('An event with these details already exists on The Living Culture Map.');
+      throw new Error('An event with these details already exists on Paaramparik.');
     }
 
     // Map Enums

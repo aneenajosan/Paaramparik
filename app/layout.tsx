@@ -5,7 +5,7 @@ import Footer from '@/components/Footer';
 import StartupAnimation from '@/components/StartupAnimation';
 
 export const metadata: Metadata = {
-  title: { default: 'The Living Culture Map', template: '%s · The Living Culture Map' },
+  title: { default: 'Paaramparik', template: '%s · Paaramparik' },
   description: 'Discover local traditions, artists, places and festivals beyond the tourist trail — community-contributed and reviewed.',
 };
 
@@ -15,7 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Source+Sans+3:wght@400;600;700&family=Yatra+One&display=swap" rel="stylesheet" />
       </head>
       <body className="flex min-h-screen flex-col">
         <StartupAnimation />

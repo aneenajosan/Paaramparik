@@ -239,7 +239,7 @@ export class RagDuplicateService {
       return {
         success: true,
         isDuplicate: true,
-        message: 'An event with these details already exists on The Living Culture Map.',
+        message: 'An event with these details already exists on Paaramparik.',
         matches,
       };
     }

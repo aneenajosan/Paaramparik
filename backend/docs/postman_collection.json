@@ -1,6 +1,6 @@
 {
   "info": {
-    "name": "The Living Culture Map - Complete API Suite",
+    "name": "Paaramparik - Complete API Suite",
     "_postman_id": "c1f7b8e0-1a2b-4c3d-8e4f-9a0b1c2d3e4f",
     "description": "Complete collection for Event Creation, Contact OTP Verification, RAG Duplicate Detection, Filtering, Misinformation Reporting, and Admin Moderation.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"

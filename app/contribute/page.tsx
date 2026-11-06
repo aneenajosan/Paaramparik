@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import EventCreationWizard from '@/components/forms/EventCreationWizard';
 
-export const metadata = { title: 'Create Cultural Event — The Living Culture Map' };
+export const metadata = { title: 'Create Cultural Event — Paaramparik' };
 export const dynamic = 'force-dynamic';
 
 export default async function ContributePage() {

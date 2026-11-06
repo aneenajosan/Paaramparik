@@ -1,4 +1,4 @@
-# The Living Culture Map
+# Paaramparik
 
 Community-driven cultural discovery map. Next.js 15 (App Router) · TypeScript · Tailwind · Leaflet/OpenStreetMap · Supabase (Auth, Postgres/PostGIS, Storage, RLS).
 

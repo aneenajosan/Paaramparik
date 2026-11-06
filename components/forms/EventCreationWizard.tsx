@@ -336,7 +336,7 @@ export default function EventCreationWizard() {
           </div>
         </div>
         <p className="mt-5 text-sm leading-relaxed text-cream-muted">
-          Thank you for enriching The Living Culture Map. Your submission and supporting resources have been queued for administrator moderation. Our cultural reviewers will verify the details before making the listing public.
+          Thank you for enriching Paaramparik. Your submission and supporting resources have been queued for administrator moderation. Our cultural reviewers will verify the details before making the listing public.
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-4">
           <Link href="/directory" className="btn-saffron">

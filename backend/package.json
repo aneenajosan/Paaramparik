@@ -1,7 +1,7 @@
 {
   "name": "living-culture-map-backend",
   "version": "1.0.0",
-  "description": "Backend API with Cultural Event Filtering for The Living Culture Map",
+  "description": "Backend API with Cultural Event Filtering for Paaramparik",
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",

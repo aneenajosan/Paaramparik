@@ -1,4 +1,4 @@
-// Prisma Schema for The Living Culture Map Backend
+// Prisma Schema for Paaramparik Backend
 // Supports PostgreSQL with vector embeddings, multi-criteria filtering, contact verification, and moderation
 
 generator client {

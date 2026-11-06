@@ -1,7 +1,7 @@
-# The Living Culture Map — Complete Backend API Documentation
+# Paaramparik — Complete Backend API Documentation
 ## Cultural Event Creation, Verification, RAG Trust Engine & Discovery
 
-This document details the REST API specifications for The Living Culture Map, built with **Node.js, Express.js, TypeScript, PostgreSQL, Prisma ORM, and Zod**.
+This document details the REST API specifications for Paaramparik, built with **Node.js, Express.js, TypeScript, PostgreSQL, Prisma ORM, and Zod**.
 
 ---
 
@@ -130,7 +130,7 @@ Compares a proposed event against existing database records using 384-dimensiona
 {
   "success": true,
   "isDuplicate": true,
-  "message": "An event with these details already exists on The Living Culture Map.",
+  "message": "An event with these details already exists on Paaramparik.",
   "matches": [
     {
       "id": "event_001",

@@ -16,6 +16,7 @@ const config: Config = {
       fontFamily: {
         display: ['Fraunces', 'Georgia', 'serif'],
         sans: ['"Source Sans 3"', 'system-ui', 'sans-serif'],
+        samarkan: ['Samarkan', '"Yatra One"', 'Fraunces', 'Georgia', 'serif'],
       },
       borderRadius: { DEFAULT: '2px', md: '4px', lg: '6px' },
       spacing: { section: '5rem' },
