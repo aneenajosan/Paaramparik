@@ -4,11 +4,11 @@ import ReplayIntroButton from './ReplayIntroButton';
 
 export default function Footer() {
   return (
-    <footer className="mt-section bg-crimson-950 text-cream">
+    <footer className="mt-section bg-crimson-900/50">
       <div className="kasavu" aria-hidden />
       <div className="container-page grid gap-8 py-12 md:grid-cols-3">
         <div>
-          <Logo variant="light" />
+          <Logo />
           <p className="mt-4 max-w-xs text-sm text-cream-muted">Local culture beyond the tourist trail — contributed by communities, reviewed by people, sourced in the open.</p>
           <div className="mt-4">
             <ReplayIntroButton />

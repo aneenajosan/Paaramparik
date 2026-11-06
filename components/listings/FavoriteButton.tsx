@@ -51,8 +51,8 @@ export default function FavoriteButton({ listingId }: { listingId: string }) {
       aria-label={saved ? 'Remove from saved' : 'Save tradition'}
       className={`absolute top-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-md transition-all ${
         saved
-          ? 'bg-crimson-600/90 text-cream shadow-md scale-110'
-          : 'bg-crimson-950/70 text-cream/80 hover:bg-crimson-900 hover:text-cream hover:scale-105'
+          ? 'bg-[#CC6F00] text-[#FFF5EB] shadow-md scale-110 border border-[#FF933E]'
+          : 'bg-[#4D2A00]/80 text-[#FFF5EB]/80 hover:bg-[#5E3400] hover:text-[#FF933E] hover:scale-105 border border-[#7A4300]/50'
       }`}
     >
       <Heart size={15} className={saved ? 'fill-cream stroke-cream' : 'stroke-current'} />

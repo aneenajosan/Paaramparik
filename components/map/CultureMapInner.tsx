@@ -32,16 +32,16 @@ export default function CultureMapInner({ listings, user = null, height = '560px
     <MapContainer center={[10.52, 76.21]} zoom={9} scrollWheelZoom={scrollZoom} style={{ height, width: '100%' }} zoomControl>
       <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" />
       <Fit listings={listings} user={user} />
-      {user && <CircleMarker center={[user.lat, user.lng]} radius={8} pathOptions={{ color: '#F6EBDD', fillColor: '#E06000', fillOpacity: 1 }}><Popup>You are here</Popup></CircleMarker>}
+      {user && <CircleMarker center={[user.lat, user.lng]} radius={8} pathOptions={{ color: '#FFF5EB', fillColor: '#FF933E', fillOpacity: 1 }}><Popup>You are here</Popup></CircleMarker>}
       {listings.map((l) => (
         <Marker key={l.id} position={[l.latitude, l.longitude]} icon={iconFor(l.listing_type)} title={l.title}>
           <Popup>
             <Link href={`/listings/${l.slug}`} className="block w-56 no-underline">
-              <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: TYPE_META[l.listing_type].color === '#DB0016' ? '#E06000' : '#E06000' }}>{TYPE_META[l.listing_type].label}</span>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#FF933E]">{TYPE_META[l.listing_type].label}</span>
               <span className="mt-1 block font-display text-base font-bold text-cream">{l.title}</span>
               <span className="mt-1 block text-xs text-cream-muted">{l.location_name}</span>
               <span className="mt-2 line-clamp-3 block text-xs text-cream">{l.description}</span>
-              <span className="mt-2 block text-xs font-bold text-saffron-500 underline">Open full listing →</span>
+              <span className="mt-2 block text-xs font-bold text-[#FF933E] hover:underline">Open full listing →</span>
             </Link>
           </Popup>
         </Marker>

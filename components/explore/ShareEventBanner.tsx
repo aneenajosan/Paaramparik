@@ -8,13 +8,13 @@ export default function ShareEventBanner() {
   return (
     <section
       aria-label="Contribute to Paaramparik"
-      className="relative overflow-hidden rounded-2xl border border-saffron-600/40 bg-gradient-to-r from-crimson-950 via-crimson-900 to-saffron-950 p-6 sm:p-8 shadow-xl"
+      className="relative overflow-hidden rounded-2xl border border-[#CC6F00]/50 bg-gradient-to-r from-[#4D2A00] via-[#5E3400] to-[#7A4300] p-6 sm:p-8 shadow-xl"
     >
-      <div className="absolute -right-10 -bottom-10 h-48 w-48 rounded-full bg-saffron-500/10 blur-2xl pointer-events-none" />
+      <div className="absolute -right-10 -bottom-10 h-48 w-48 rounded-full bg-[#FF933E]/10 blur-2xl pointer-events-none" />
 
       <div className="relative z-10 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
         <div className="flex items-start gap-4 max-w-2xl">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-saffron-500/20 text-saffron-400 border border-saffron-500/30">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#CC6F00]/25 text-[#FF933E] border border-[#CC6F00]/40">
             <Users size={24} />
           </div>
           <div>
@@ -30,7 +30,7 @@ export default function ShareEventBanner() {
 
         <Link
           href="/contribute"
-          className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-saffron-500 to-saffron-600 px-6 py-3 text-sm font-bold text-crimson-950 shadow-lg shadow-saffron-500/20 transition-all hover:scale-105 active:scale-95 shrink-0"
+          className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#CC6F00] to-[#FF933E] px-6 py-3 text-sm font-bold text-[#4D2A00] shadow-lg shadow-[#CC6F00]/25 transition-all hover:scale-105 active:scale-95 shrink-0"
         >
           <span>Submit Event</span>
           <ArrowRight size={16} />

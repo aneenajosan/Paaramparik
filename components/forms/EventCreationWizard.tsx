@@ -375,18 +375,18 @@ export default function EventCreationWizard() {
                     ? 'bg-saffron-500 text-crimson-950 ring-4 ring-saffron-500/20'
                     : step > s.num
                     ? 'bg-emerald-600 text-white'
-                    : 'border border-stone-300 bg-stone-100 text-stone-500'
+                    : 'border border-crimson-800 bg-crimson-900/40 text-cream-muted'
                 }`}
               >
                 {step > s.num ? '✓' : s.num}
               </div>
-              <span className={`mt-2 hidden text-center sm:block ${step === s.num ? 'text-saffron-700 font-bold' : 'text-stone-500'}`}>
+              <span className={`mt-2 hidden text-center sm:block ${step === s.num ? 'text-saffron-400 font-bold' : ''}`}>
                 {s.label}
               </span>
             </div>
           ))}
         </div>
-        <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-stone-200">
+        <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-crimson-900">
           <div
             className="h-full bg-saffron-500 transition-all duration-300"
             style={{ width: `${((step - 1) / 4) * 100}%` }}
@@ -654,7 +654,7 @@ export default function EventCreationWizard() {
             </div>
 
             {/* Mobile Phone Verification Box */}
-            <div className={`rounded-xl border p-5 transition-colors ${phoneVerified ? 'border-emerald-500/50 bg-emerald-50/50' : 'border-stone-200 bg-stone-50/60'}`}>
+            <div className={`rounded-xl border p-5 transition-colors ${phoneVerified ? 'border-emerald-500/50 bg-emerald-950/20' : 'border-crimson-800/80 bg-crimson-950/40'}`}>
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <Phone size={18} className={phoneVerified ? 'text-emerald-400' : 'text-saffron-500'} />
@@ -714,7 +714,7 @@ export default function EventCreationWizard() {
             </div>
 
             {/* Email Address Verification Box */}
-            <div className={`rounded-xl border p-5 transition-colors ${emailVerified ? 'border-emerald-500/50 bg-emerald-50/50' : 'border-stone-200 bg-stone-50/60'}`}>
+            <div className={`rounded-xl border p-5 transition-colors ${emailVerified ? 'border-emerald-500/50 bg-emerald-950/20' : 'border-crimson-800/80 bg-crimson-950/40'}`}>
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <Mail size={18} className={emailVerified ? 'text-emerald-400' : 'text-saffron-500'} />
@@ -775,21 +775,21 @@ export default function EventCreationWizard() {
 
             {/* OTP Entry Dialog Area */}
             {activeOtpMethod && (
-              <div className="rounded-xl border border-saffron-300 bg-saffron-50 p-5 shadow-sm text-stone-800">
-                <h3 className="flex items-center gap-2 font-bold text-saffron-700">
+              <div className="rounded-xl border border-saffron-500/60 bg-crimson-900/90 p-5 shadow-lg">
+                <h3 className="flex items-center gap-2 font-bold text-saffron-400">
                   <ShieldCheck size={18} />
                   Enter 6-Digit Verification Code
                 </h3>
-                <p className="mt-1 text-xs text-stone-600">
+                <p className="mt-1 text-xs text-cream-muted">
                   We sent a 6-digit code to{' '}
-                  <span className="font-mono font-bold text-stone-900">
+                  <span className="font-mono text-cream">
                     {activeOtpMethod === 'PHONE' ? organizerPhone : organizerEmail}
                   </span>
                   . Code expires in 5 minutes.
                 </p>
 
                 {otpSuccessMsg && (
-                  <p className="mt-2 rounded bg-saffron-100 p-2 text-xs text-saffron-800">
+                  <p className="mt-2 rounded bg-saffron-950/60 p-2 text-xs text-saffron-300">
                     {otpSuccessMsg}
                   </p>
                 )}
@@ -798,7 +798,7 @@ export default function EventCreationWizard() {
                   <input
                     type="text"
                     maxLength={6}
-                    className="input w-48 text-center font-mono text-xl tracking-widest text-crimson-950 bg-white border-stone-300"
+                    className="input w-48 text-center font-mono text-xl tracking-widest"
                     placeholder="123456"
                     value={otpInput}
                     onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, ''))}
@@ -824,12 +824,12 @@ export default function EventCreationWizard() {
                   </button>
                 </div>
 
-                {otpError && <p className="mt-2 text-xs text-rose-600 font-semibold">{otpError}</p>}
+                {otpError && <p className="mt-2 text-xs text-rose-400">{otpError}</p>}
               </div>
             )}
 
-            <div className="rounded-lg bg-stone-100 p-4 text-xs text-stone-600 flex gap-2">
-              <HelpCircle size={16} className="mt-0.5 shrink-0 text-saffron-600" />
+            <div className="rounded-lg bg-crimson-900/40 p-4 text-xs text-cream-muted flex gap-2">
+              <HelpCircle size={16} className="mt-0.5 shrink-0 text-saffron-500" />
               <span>
                 <strong>Why verify?</strong> Contact verification protects the platform from spam, fictitious events, and unauthorized submissions. Modifying a verified contact resets its status and requires new verification.
               </span>
@@ -842,15 +842,15 @@ export default function EventCreationWizard() {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-bold text-crimson-950">3. Know More / Official Event Resources</h2>
-                <p className="mt-1 text-sm text-stone-500">
+                <h2 className="text-2xl font-bold">3. Know More / Official Event Resources</h2>
+                <p className="mt-1 text-sm text-cream-muted">
                   Provide at least one verifiable external link (Official website, Instagram profile, registration page, or institution announcement).
                 </p>
               </div>
               <button
                 type="button"
                 onClick={addResource}
-                className="btn-ghost flex items-center gap-1 text-xs text-saffron-700"
+                className="btn-ghost flex items-center gap-1 text-xs text-saffron-400"
               >
                 <Plus size={14} /> Add Resource
               </button>
@@ -858,7 +858,7 @@ export default function EventCreationWizard() {
 
             <div className="space-y-4">
               {resources.map((item, index) => (
-                <div key={index} className="rounded-xl border border-stone-200 bg-stone-50/70 p-4">
+                <div key={index} className="rounded-xl border border-crimson-800 bg-crimson-950/40 p-4">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase tracking-wider text-saffron-400">
                       Resource #{index + 1}
@@ -1051,8 +1051,8 @@ export default function EventCreationWizard() {
             </div>
 
             {/* 10-Point Legal Terms Box */}
-            <div className="rounded-xl border border-stone-200 bg-stone-50/80 p-5 text-xs leading-relaxed text-stone-700 max-h-64 overflow-y-auto space-y-3">
-              <h4 className="font-bold text-sm text-saffron-800 uppercase tracking-wide">
+            <div className="rounded-xl border border-crimson-800 bg-crimson-950/60 p-5 text-xs leading-relaxed text-cream/90 max-h-64 overflow-y-auto space-y-3">
+              <h4 className="font-bold text-sm text-saffron-400 uppercase tracking-wide">
                 Event Information Accuracy and Legal Responsibility (Version 1.0)
               </h4>
               <p>By submitting this event, I confirm that:</p>
@@ -1071,31 +1071,31 @@ export default function EventCreationWizard() {
             </div>
 
             {/* Mandatory Checkbox */}
-            <div className="rounded-lg border border-saffron-300 bg-saffron-50/80 p-4">
+            <div className="rounded-lg border border-saffron-500/50 bg-saffron-950/30 p-4">
               <label className="flex items-start gap-3 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={termsAccepted}
                   onChange={(e) => setTermsAccepted(e.target.checked)}
-                  className="mt-1 h-5 w-5 rounded border-stone-300 text-saffron-600 focus:ring-saffron-500"
+                  className="mt-1 h-5 w-5 rounded border-crimson-800 text-saffron-500 focus:ring-saffron-500"
                   required
                 />
-                <span className="text-sm font-semibold text-crimson-950 leading-snug">
+                <span className="text-sm font-semibold text-cream leading-snug">
                   I have read and agree to the Terms and Conditions. I confirm that the event details and supporting information I have provided are accurate to the best of my knowledge. *
                 </span>
               </label>
             </div>
 
             {/* Summary Review */}
-            <div className="rounded-lg bg-stone-100 p-4 text-xs space-y-2">
-              <div className="font-semibold text-saffron-800 uppercase tracking-wider">Summary Review</div>
-              <div className="grid grid-cols-2 gap-2 text-stone-600">
-                <div>Event Name: <span className="text-crimson-950 font-medium">{title}</span></div>
-                <div>Locality: <span className="text-crimson-950 font-medium">{locality}</span></div>
-                <div>Date: <span className="text-crimson-950 font-medium">{eventDate} ({startTime} - {endTime})</span></div>
-                <div>Category: <span className="text-crimson-950 font-medium">{category} ({artForm})</span></div>
-                <div>Verified Contact: <span className="text-emerald-700 font-semibold">{phoneVerified ? 'Phone ✓' : ''} {emailVerified ? 'Email ✓' : ''}</span></div>
-                <div>Resources: <span className="text-crimson-950 font-medium">{resources.length} link(s) attached</span></div>
+            <div className="rounded-lg bg-crimson-900/40 p-4 text-xs space-y-2">
+              <div className="font-semibold text-saffron-400 uppercase tracking-wider">Summary Review</div>
+              <div className="grid grid-cols-2 gap-2 text-cream-muted">
+                <div>Event Name: <span className="text-cream">{title}</span></div>
+                <div>Locality: <span className="text-cream">{locality}</span></div>
+                <div>Date: <span className="text-cream">{eventDate} ({startTime} - {endTime})</span></div>
+                <div>Category: <span className="text-cream">{category} ({artForm})</span></div>
+                <div>Verified Contact: <span className="text-emerald-400 font-semibold">{phoneVerified ? 'Phone ✓' : ''} {emailVerified ? 'Email ✓' : ''}</span></div>
+                <div>Resources: <span className="text-cream">{resources.length} link(s) attached</span></div>
               </div>
             </div>
 

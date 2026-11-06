@@ -17,7 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Source+Sans+3:wght@400;600;700&family=Yatra+One&display=swap" rel="stylesheet" />
       </head>
-      <body className="flex min-h-screen flex-col bg-[#FAF7F2] text-[#240006]">
+      <body className="flex min-h-screen flex-col">
         <StartupAnimation />
         <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-saffron-500 focus:p-3 focus:text-crimson-950">Skip to content</a>
         <Navbar />

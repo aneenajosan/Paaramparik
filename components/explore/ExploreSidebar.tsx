@@ -60,7 +60,7 @@ export default function ExploreSidebar({
       >
         {/* Brand Header */}
         <div className="flex h-20 items-center justify-between px-6 border-b border-crimson-900/60">
-          <Logo variant="light" />
+          <Logo />
           <button
             type="button"
             onClick={onClose}
@@ -146,7 +146,7 @@ export default function ExploreSidebar({
           <div className="pt-2">
             <Link
               href="/contribute"
-              className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-lg bg-gradient-to-r from-saffron-500 to-saffron-600 hover:from-saffron-400 hover:to-saffron-500 text-crimson-950 font-bold text-sm shadow-md shadow-saffron-500/10 transition-all hover:scale-[1.02]"
+              className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-lg bg-gradient-to-r from-[#CC6F00] to-[#FF933E] hover:from-[#FF933E] hover:to-[#CC6F00] text-[#4D2A00] font-bold text-sm shadow-md shadow-[#CC6F00]/20 transition-all hover:scale-[1.02]"
             >
               <Plus size={18} strokeWidth={2.5} />
               <span>Submit Event</span>
