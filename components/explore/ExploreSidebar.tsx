@@ -77,6 +77,7 @@ export default function ExploreSidebar({
           <div className="space-y-1">
             <Link
               href="/"
+              onClick={onClose}
               className={`flex items-center gap-3.5 px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
                 pathname === '/'
                   ? 'bg-saffron-500 text-crimson-950 shadow-sm'
@@ -87,9 +88,13 @@ export default function ExploreSidebar({
               <span>Home</span>
             </Link>
 
-            <Link
-              href="/explore"
-              className={`flex items-center gap-3.5 px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
+            <button
+              type="button"
+              onClick={() => {
+                handleTypeClick('');
+                onClose();
+              }}
+              className={`w-full flex items-center gap-3.5 px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors text-left ${
                 pathname === '/explore' && !activeType
                   ? 'bg-crimson-900 text-saffron-400 border border-crimson-800'
                   : 'text-cream/90 hover:bg-crimson-900/50 hover:text-cream'
@@ -97,11 +102,14 @@ export default function ExploreSidebar({
             >
               <MapIcon size={18} />
               <span>Map & Explore</span>
-            </Link>
+            </button>
 
             <button
               type="button"
-              onClick={() => handleTypeClick('event')}
+              onClick={() => {
+                handleTypeClick('event');
+                onClose();
+              }}
               className={`w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
                 activeType === 'event'
                   ? 'bg-crimson-900 text-saffron-400 border border-crimson-800'
@@ -116,6 +124,7 @@ export default function ExploreSidebar({
 
             <Link
               href="/story"
+              onClick={onClose}
               className={`flex items-center gap-3.5 px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
                 pathname === '/story'
                   ? 'bg-saffron-500 text-crimson-950'
@@ -128,7 +137,10 @@ export default function ExploreSidebar({
 
             <button
               type="button"
-              onClick={() => handleTypeClick('artist')}
+              onClick={() => {
+                handleTypeClick('artist');
+                onClose();
+              }}
               className={`w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
                 activeType === 'artist'
                   ? 'bg-crimson-900 text-saffron-400 border border-crimson-800'
@@ -146,7 +158,8 @@ export default function ExploreSidebar({
           <div className="pt-2">
             <Link
               href="/contribute"
-              className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-lg bg-gradient-to-r from-[#CC6F00] to-[#FF933E] hover:from-[#FF933E] hover:to-[#CC6F00] text-[#4D2A00] font-bold text-sm shadow-md shadow-[#CC6F00]/20 transition-all hover:scale-[1.02]"
+              onClick={onClose}
+              className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-lg bg-gradient-to-r from-saffron-500 to-saffron-600 hover:from-saffron-400 hover:to-saffron-500 text-crimson-950 font-bold text-sm shadow-md shadow-saffron-500/10 transition-all hover:scale-[1.02]"
             >
               <Plus size={18} strokeWidth={2.5} />
               <span>Submit Event</span>
@@ -159,7 +172,10 @@ export default function ExploreSidebar({
           <div className="space-y-1">
             <button
               type="button"
-              onClick={() => handleTypeClick('saved')}
+              onClick={() => {
+                handleTypeClick('saved');
+                onClose();
+              }}
               className={`w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
                 activeType === 'saved'
                   ? 'bg-crimson-900 text-saffron-400 border border-crimson-800'
@@ -177,17 +193,24 @@ export default function ExploreSidebar({
               )}
             </button>
 
-            <Link
-              href="/directory"
-              className={`flex items-center gap-3.5 px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
-                pathname === '/directory'
-                  ? 'bg-saffron-500 text-crimson-950'
+            <button
+              type="button"
+              onClick={() => {
+                handleTypeClick('directory');
+                onClose();
+              }}
+              className={`w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
+                activeType === 'directory' || pathname === '/directory'
+                  ? 'bg-saffron-500 text-crimson-950 font-bold shadow-sm'
                   : 'text-cream/90 hover:bg-crimson-900/50 hover:text-cream'
               }`}
             >
-              <FolderTree size={18} />
-              <span>Cultural Directory</span>
-            </Link>
+              <div className="flex items-center gap-3.5">
+                <FolderTree size={18} />
+                <span>Cultural Directory</span>
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-wider opacity-75">View</span>
+            </button>
 
             <div className="px-4 py-3 rounded-lg bg-crimson-900/40 border border-crimson-800/50 text-xs text-cream-muted/90">
               <div className="flex items-center gap-1.5 font-bold text-saffron-400 mb-1">

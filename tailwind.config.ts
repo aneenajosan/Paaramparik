@@ -8,47 +8,10 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Base Theme Colors:
-        // Base background: #4D2A00
-        // Mid tone: #CC6F00
-        // Bright accent: #FF933E
-        base: {
-          bg: '#4D2A00',
-          surface: '#5E3400',
-          border: '#7A4300',
-          mid: '#CC6F00',
-          bright: '#FF933E',
-        },
-        crimson: {
-          950: '#4D2A00', // Entire base bg of website: #4D2A00
-          900: '#5E3400', // Card surfaces & containers
-          800: '#7A4300', // Element borders & cards
-          700: '#995400', // Active borders & dividers
-          600: '#B86400', // Hover states
-          500: '#CC6F00', // Mid primary action: #CC6F00
-        },
-        saffron: {
-          950: '#3D2100',
-          900: '#4D2A00', // Base dark: #4D2A00
-          800: '#7A4300',
-          700: '#995400',
-          600: '#B86400',
-          500: '#CC6F00', // Mid accent: #CC6F00
-          400: '#FF933E', // Bright highlight: #FF933E
-          300: '#FFAF6E',
-        },
-        plum: {
-          950: '#3D2100',
-          900: '#4D2A00',
-          800: '#5E3400',
-          700: '#7A4300',
-          600: '#CC6F00',
-          500: '#FF933E',
-        },
-        cream: {
-          DEFAULT: '#FFF5EB',
-          muted: '#E6D3BF',
-        },
+        crimson: { 950: '#240006', 900: '#5C0008', 800: '#94000F', 600: '#B5001A', 500: '#DB0016' },
+        saffron: { 950: '#241400', 900: '#5C2400', 800: '#8F3F00', 600: '#B84A00', 500: '#E06000' },
+        plum: { 950: '#1A0014', 900: '#4D0040', 800: '#700050', 600: '#8A0068', 500: '#A8007A' },
+        cream: { DEFAULT: '#F6EBDD', muted: '#D9C3B0' },
       },
       fontFamily: {
         display: ['Fraunces', 'Georgia', 'serif'],

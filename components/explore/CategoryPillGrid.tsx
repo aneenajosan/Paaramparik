@@ -24,44 +24,44 @@ const CATEGORY_THEMES: Record<
 > = {
   'music-percussion': {
     icon: Music,
-    bg: 'bg-[#CC6F00]/20 hover:bg-[#CC6F00]/30',
-    text: 'text-[#FF933E]',
-    border: 'border-[#CC6F00]/50',
+    bg: 'bg-orange-600/20 hover:bg-orange-600/30',
+    text: 'text-orange-400',
+    border: 'border-orange-500/50',
     label: 'Music & Percussion',
   },
   'visual-arts': {
     icon: Palette,
-    bg: 'bg-[#FF933E]/20 hover:bg-[#FF933E]/30',
-    text: 'text-[#FF933E]',
-    border: 'border-[#FF933E]/50',
+    bg: 'bg-rose-600/20 hover:bg-rose-600/30',
+    text: 'text-rose-400',
+    border: 'border-rose-500/50',
     label: 'Visual Arts',
   },
   'performing-arts': {
     icon: Drama,
-    bg: 'bg-[#CC6F00]/25 hover:bg-[#CC6F00]/35',
-    text: 'text-[#FF933E]',
-    border: 'border-[#CC6F00]/60',
+    bg: 'bg-purple-600/20 hover:bg-purple-600/30',
+    text: 'text-purple-400',
+    border: 'border-purple-500/50',
     label: 'Performing Arts',
   },
   'heritage-architecture': {
     icon: Landmark,
-    bg: 'bg-[#FF933E]/15 hover:bg-[#FF933E]/25',
-    text: 'text-[#FF933E]',
-    border: 'border-[#FF933E]/40',
+    bg: 'bg-teal-600/20 hover:bg-teal-600/30',
+    text: 'text-teal-400',
+    border: 'border-teal-500/50',
     label: 'Heritage Places',
   },
   'crafts-textiles': {
     icon: Hammer,
-    bg: 'bg-[#CC6F00]/20 hover:bg-[#CC6F00]/30',
-    text: 'text-[#FF933E]',
-    border: 'border-[#CC6F00]/50',
+    bg: 'bg-amber-600/20 hover:bg-amber-600/30',
+    text: 'text-amber-400',
+    border: 'border-amber-500/50',
     label: 'Traditional Crafts',
   },
   'festivals-rituals': {
     icon: Sparkles,
-    bg: 'bg-[#FF933E]/25 hover:bg-[#FF933E]/35',
-    text: 'text-[#FF933E]',
-    border: 'border-[#FF933E]/50',
+    bg: 'bg-yellow-600/20 hover:bg-yellow-600/30',
+    text: 'text-yellow-400',
+    border: 'border-yellow-500/50',
     label: 'Festivals & Rituals',
   },
 };
@@ -104,8 +104,12 @@ export default function CategoryPillGrid({
             <button
               key={cat.id}
               type="button"
-              onClick={() => onSelectCategory(isSelected ? '' : cat.id)}
-              className={`group flex min-w-[130px] flex-col items-center gap-2.5 rounded-2xl border p-4 text-center transition-all duration-200 hover:-translate-y-0.5 ${
+              onClick={() => {
+                onSelectCategory(isSelected ? '' : cat.id);
+                const el = document.getElementById('cultural-directory-section');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className={`group flex min-w-[130px] flex-col items-center gap-2.5 rounded-2xl border p-4 text-center transition-all duration-200 hover:-translate-y-0.5 cursor-pointer ${
                 isSelected
                   ? 'border-saffron-400 bg-crimson-900 shadow-md shadow-saffron-500/10 scale-105'
                   : 'border-crimson-800/80 bg-crimson-950/70 hover:border-crimson-700 hover:bg-crimson-900/40'

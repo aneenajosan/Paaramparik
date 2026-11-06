@@ -76,9 +76,9 @@ export default function CulturalSpotlights({
             </Link>
 
             <div className="flex items-center gap-1.5">
-              <span className="h-1.5 w-4 rounded-full bg-[#FF933E]" />
-              <span className="h-1.5 w-1.5 rounded-full bg-[#7A4300]" />
-              <span className="h-1.5 w-1.5 rounded-full bg-[#7A4300]" />
+              <span className="h-1.5 w-4 rounded-full bg-saffron-500" />
+              <span className="h-1.5 w-1.5 rounded-full bg-crimson-800" />
+              <span className="h-1.5 w-1.5 rounded-full bg-crimson-800" />
             </div>
           </div>
         </article>
@@ -106,8 +106,12 @@ export default function CulturalSpotlights({
               <button
                 key={loc}
                 type="button"
-                onClick={() => onSelectLocation && onSelectLocation(loc)}
-                className="group flex w-full items-center gap-3 rounded-xl p-2 text-left transition-colors hover:bg-crimson-800/50"
+                onClick={() => {
+                  if (onSelectLocation) onSelectLocation(loc);
+                  const el = document.getElementById('cultural-directory-section');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="group flex w-full items-center gap-3 rounded-xl p-2 text-left transition-colors hover:bg-crimson-800/50 cursor-pointer"
               >
                 <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-crimson-950">
                   <Image src={img} alt={loc} fill unoptimized className="object-cover" />

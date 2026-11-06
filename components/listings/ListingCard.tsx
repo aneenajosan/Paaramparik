@@ -92,9 +92,13 @@ export default function ListingCard({
           </div>
 
           <span
-            className="rounded-full px-2.5 py-0.5 text-[11px] font-bold bg-[#4D2A00] text-[#FF933E] border border-[#CC6F00]/60 shadow-sm"
+            className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold ${
+              isFree
+                ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-800/60'
+                : 'bg-saffron-950/80 text-saffron-400 border border-saffron-800/60'
+            }`}
           >
-            {isFree ? 'Free Access' : 'Ticketed'}
+            {isFree ? 'Free' : 'Ticketed'}
           </span>
         </div>
       </Link>

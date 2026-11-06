@@ -101,6 +101,12 @@ export default function Explorer({
     } else if (type === 'artist') {
       setActiveSidebarType('artist');
       setFilter('types', ['artist', 'workshop']);
+    } else if (type === 'directory') {
+      setActiveSidebarType('directory');
+      setView('list');
+      setFilter('types', []);
+      const el = document.getElementById('cultural-directory-section');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
     } else {
       setActiveSidebarType('');
       setFilter('types', []);
@@ -220,12 +226,17 @@ export default function Explorer({
             >
               Create Event
             </Link>
-            <Link
-              href="/directory"
-              className="px-3 py-1.5 rounded-full text-xs font-semibold text-cream-muted hover:text-saffron-400 hover:bg-crimson-900/40 transition-colors"
+            <button
+              type="button"
+              onClick={() => handleSelectQuickType('directory')}
+              className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors cursor-pointer ${
+                activeSidebarType === 'directory'
+                  ? 'bg-saffron-500 text-crimson-950 font-bold shadow-sm'
+                  : 'text-cream-muted hover:text-saffron-400 hover:bg-crimson-900/40'
+              }`}
             >
-              Directory
-            </Link>
+              Cultural Directory
+            </button>
           </nav>
 
           {/* User Location Action */}
@@ -250,6 +261,7 @@ export default function Explorer({
           {/* Section 1: Hero Spotlight & Interactive Map Split */}
           <ExploreHeroMapSplit
             listings={results}
+            totalListingsCount={listings.length}
             categories={categories}
             filters={f}
             onFilterChange={setFilter}
@@ -304,12 +316,18 @@ export default function Explorer({
           {/* Section 4: All Traditions & Cultural Spotlights (Split) */}
           <div className="grid gap-8 lg:grid-cols-12 items-start">
             {/* Left Column (8 cols): Filterable Listings Stream */}
-            <section className="space-y-4 lg:col-span-8" aria-label="Browse Traditions">
+            <section
+              id="cultural-directory-section"
+              className="space-y-4 lg:col-span-8 scroll-mt-24"
+              aria-label="Browse Traditions"
+            >
               {/* Toolbar & Filter Meta */}
               <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-crimson-800/80 bg-crimson-900/40 p-4">
                 <div>
                   <h3 className="font-display text-lg font-bold text-cream">
-                    {activeSidebarType === 'saved'
+                    {activeSidebarType === 'directory'
+                      ? 'Cultural Directory'
+                      : activeSidebarType === 'saved'
                       ? 'Saved Traditions'
                       : f.category
                       ? categories.find((c) => c.id === f.category)?.name
@@ -347,46 +365,58 @@ export default function Explorer({
                     </select>
                   </div>
 
-                  {/* View Switcher (Grid / Map / List) */}
+                  {/* View Switcher: Grid, Map, Directory */}
                   <div className="flex rounded-lg border border-crimson-800 bg-crimson-950 p-0.5">
                     <button
                       type="button"
-                      onClick={() => setView('grid')}
-                      className={`p-1.5 rounded-md transition-colors ${
-                        view === 'grid'
-                          ? 'bg-saffron-500 text-crimson-950 font-bold'
+                      onClick={() => {
+                        setView('grid');
+                        if (activeSidebarType === 'directory') setActiveSidebarType('');
+                      }}
+                      className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
+                        view === 'grid' && activeSidebarType !== 'directory'
+                          ? 'bg-saffron-500 text-crimson-950 font-bold shadow-sm'
                           : 'text-cream-muted hover:text-cream'
                       }`}
                       title="Grid view"
                       aria-label="Grid view"
                     >
-                      <LayoutGrid size={15} />
+                      <LayoutGrid size={13} />
+                      <span className="hidden sm:inline">Grid</span>
                     </button>
                     <button
                       type="button"
-                      onClick={() => setView('map')}
-                      className={`p-1.5 rounded-md transition-colors ${
+                      onClick={() => {
+                        setView('map');
+                        if (activeSidebarType === 'directory') setActiveSidebarType('');
+                      }}
+                      className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
                         view === 'map'
-                          ? 'bg-saffron-500 text-crimson-950 font-bold'
+                          ? 'bg-saffron-500 text-crimson-950 font-bold shadow-sm'
                           : 'text-cream-muted hover:text-cream'
                       }`}
                       title="Map view"
                       aria-label="Map view"
                     >
-                      <MapIcon size={15} />
+                      <MapIcon size={13} />
+                      <span className="hidden sm:inline">Map</span>
                     </button>
                     <button
                       type="button"
-                      onClick={() => setView('list')}
-                      className={`p-1.5 rounded-md transition-colors ${
-                        view === 'list'
-                          ? 'bg-saffron-500 text-crimson-950 font-bold'
+                      onClick={() => {
+                        setView('list');
+                        setActiveSidebarType('directory');
+                      }}
+                      className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
+                        view === 'list' || activeSidebarType === 'directory'
+                          ? 'bg-saffron-500 text-crimson-950 font-bold shadow-sm'
                           : 'text-cream-muted hover:text-cream'
                       }`}
-                      title="List view"
-                      aria-label="List view"
+                      title="Cultural Directory list view"
+                      aria-label="Cultural Directory view"
                     >
-                      <List size={15} />
+                      <List size={13} />
+                      <span>Cultural Directory</span>
                     </button>
                   </div>
                 </div>
