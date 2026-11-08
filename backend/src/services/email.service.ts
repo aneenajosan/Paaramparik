@@ -10,7 +10,6 @@ export interface EmailDispatchResult {
 
 export class EmailService {
   private transporter: Transporter | null = null;
-  private defaultFrom = process.env.EMAIL_FROM || '"Paaramparik Cultural Trust" <verify@paaramparik.culture>';
 
   /**
    * Initializes or returns the cached nodemailer transporter
@@ -20,21 +19,7 @@ export class EmailService {
       return this.transporter;
     }
 
-    // 1. If explicit SMTP credentials are provided in .env
-    if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
-      this.transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: Number(process.env.SMTP_PORT) || 587,
-        secure: process.env.SMTP_SECURE === 'true',
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
-        },
-      });
-      return this.transporter;
-    }
-
-    // 2. In unit test environment, use jsonTransport for instant non-blocking execution
+    // 1. In unit test environment, use jsonTransport for instant non-blocking execution
     if (process.env.NODE_ENV === 'test') {
       this.transporter = nodemailer.createTransport({
         jsonTransport: true,
@@ -42,7 +27,41 @@ export class EmailService {
       return this.transporter;
     }
 
-    // 3. In development, attempt to initialize Ethereal test inbox for real sample email delivery
+    // 2. Direct Gmail integration (EMAIL_USER + EMAIL_PASS or GMAIL_USER + GMAIL_PASS)
+    const gmailUser = process.env.EMAIL_USER || process.env.GMAIL_USER;
+    const gmailPass = process.env.EMAIL_PASS || process.env.GMAIL_PASS;
+
+    if (gmailUser && gmailPass) {
+      this.transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: gmailUser.trim(),
+          pass: gmailPass.trim().replace(/\s+/g, ''), // strip spaces from Google App Password
+        },
+      });
+      console.log(`[EMAIL-SERVICE] Active real mail delivery via Gmail SMTP (${gmailUser.trim()})`);
+      return this.transporter;
+    }
+
+    // 3. Custom SMTP credentials (e.g. Resend, Brevo, SendGrid, Amazon SES, or custom host)
+    if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
+      const port = Number(process.env.SMTP_PORT) || 587;
+      const isSecure = port === 465 || process.env.SMTP_SECURE === 'true';
+
+      this.transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST.trim(),
+        port,
+        secure: isSecure,
+        auth: {
+          user: process.env.SMTP_USER.trim(),
+          pass: process.env.SMTP_PASS.trim(),
+        },
+      });
+      console.log(`[EMAIL-SERVICE] Active real mail delivery via SMTP: ${process.env.SMTP_HOST}:${port} (${process.env.SMTP_USER})`);
+      return this.transporter;
+    }
+
+    // 4. In development fallback: attempt to initialize Ethereal test inbox
     try {
       const testAccount = await nodemailer.createTestAccount();
       this.transporter = nodemailer.createTransport({
@@ -54,7 +73,8 @@ export class EmailService {
           pass: testAccount.pass,
         },
       });
-      console.log(`[EMAIL-SERVICE] Ethereal test email account initialized: ${testAccount.user}`);
+      console.log(`[EMAIL-SERVICE] Running on Ethereal sandbox test account: ${testAccount.user}`);
+      console.log(`[EMAIL-SERVICE] ℹ️ To send to REAL inboxes, add EMAIL_USER & EMAIL_PASS (Gmail app password) in backend/.env`);
       return this.transporter;
     } catch (err) {
       console.warn('[EMAIL-SERVICE] Falling back to direct stream transport:', (err as Error).message);
@@ -70,7 +90,11 @@ export class EmailService {
    * Dispatches an OTP verification email to the user's provided email address.
    */
   async sendOtpEmail(toEmail: string, otp: string, senderName = 'Paaramparik Cultural Map'): Promise<EmailDispatchResult> {
-    const fromAddress = process.env.SAMPLE_EMAIL_FROM || `"${senderName}" <verify@paaramparik.culture>`;
+    const gmailUser = process.env.EMAIL_USER || process.env.GMAIL_USER;
+    const smtpFrom = process.env.SMTP_FROM || process.env.SAMPLE_EMAIL_FROM;
+    
+    // When using Gmail, the sender email must match the authenticated account
+    const fromAddress = smtpFrom || (gmailUser ? `"${senderName}" <${gmailUser.trim()}>` : `"${senderName}" <verify@paaramparik.culture>`);
     const subject = `Your Paaramparik Verification Code: ${otp}`;
 
     const html = `
@@ -140,7 +164,7 @@ export class EmailService {
         console.log(`[EMAIL-SERVICE] View sample email in browser: ${previewUrl}`);
       }
 
-      console.log(`[EMAIL-SERVICE] Dispatched verification code to ${toEmail} from ${fromAddress}`);
+      console.log(`[EMAIL-SERVICE] Successfully dispatched verification email to ${toEmail} from ${fromAddress} (Message ID: ${info.messageId})`);
 
       return {
         success: true,
@@ -150,8 +174,8 @@ export class EmailService {
         to: toEmail,
       };
     } catch (err: any) {
-      console.error('[EMAIL-SERVICE] Failed to send email via nodemailer:', err.message);
-      // Fallback: log to console so development is never blocked
+      console.error('[EMAIL-SERVICE] Error delivering email:', err.message);
+      // Fallback: log to console so local verification is not completely blocked
       console.log(`[EMAIL-OTP-FALLBACK] From: ${fromAddress} | To: ${toEmail} | Code: [${otp}]`);
       return {
         success: true,
@@ -163,4 +187,3 @@ export class EmailService {
 }
 
 export const emailService = new EmailService();
-
