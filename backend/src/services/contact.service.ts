@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import { ContactType, PrismaClient } from '@prisma/client';
 import { prisma as defaultPrisma } from '../config/database';
+import { emailService } from './email.service';
 
 export interface SendOtpResult {
   success: boolean;
@@ -10,6 +11,8 @@ export interface SendOtpResult {
   cooldownSeconds: number;
   contactType: ContactType;
   contactValue: string;
+  senderEmail?: string;
+  previewUrl?: string | false;
   // For development/test environments only:
   debugOtp?: string;
 }
@@ -21,9 +24,26 @@ export interface VerifyOtpResult {
   submissionRef?: string;
 }
 
+interface MemoryVerification {
+  id: string;
+  contactType: ContactType;
+  contactValue: string;
+  otpHash: string;
+  rawOtp: string;
+  expiresAt: Date;
+  attempts: number;
+  verifiedAt?: Date;
+  createdAt: Date;
+  userId?: string;
+  submissionRef?: string;
+}
+
 const OTP_EXPIRY_MS = 5 * 60 * 1000; // 5 minutes
 const RESEND_COOLDOWN_MS = 60 * 1000; // 60 seconds
 const MAX_ATTEMPTS = 5;
+
+// In-memory fallback for local dev when PostgreSQL is offline
+const memoryStore: MemoryVerification[] = [];
 
 export class ContactService {
   constructor(private db: PrismaClient = defaultPrisma) {}
@@ -39,17 +59,31 @@ export class ContactService {
     submissionRef?: string
   ): Promise<SendOtpResult> {
     const normalizedValue = this.normalizeContact(contactType, contactValue);
+    const now = Date.now();
+
+    let existing: { createdAt: Date } | null = null;
+    let useMemoryFallback = false;
 
     // Check for existing active verification
-    const existing = await this.db.contactVerification.findFirst({
-      where: {
-        contactType,
-        contactValue: normalizedValue,
-      },
-      orderBy: { createdAt: 'desc' },
-    });
-
-    const now = Date.now();
+    try {
+      existing = await this.db.contactVerification.findFirst({
+        where: {
+          contactType,
+          contactValue: normalizedValue,
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+    } catch (dbErr: any) {
+      if (dbErr.message?.includes('database server') || dbErr.code === 'P1001') {
+        useMemoryFallback = true;
+        const memoryMatches = memoryStore
+          .filter((m) => m.contactType === contactType && m.contactValue === normalizedValue)
+          .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+        existing = memoryMatches[0] || null;
+      } else {
+        throw dbErr;
+      }
+    }
 
     // Enforce cooldown
     if (existing && now - existing.createdAt.getTime() < RESEND_COOLDOWN_MS) {
@@ -62,21 +96,55 @@ export class ContactService {
     const otpHash = await bcrypt.hash(rawOtp, 10);
     const expiresAt = new Date(now + OTP_EXPIRY_MS);
 
-    // Save hashed record in database
-    await this.db.contactVerification.create({
-      data: {
-        userId: userId || null,
-        submissionRef: submissionRef || null,
+    // Save hashed record in database or fallback memory store
+    if (!useMemoryFallback) {
+      try {
+        await this.db.contactVerification.create({
+          data: {
+            userId: userId || null,
+            submissionRef: submissionRef || null,
+            contactType,
+            contactValue: normalizedValue,
+            otpHash,
+            expiresAt,
+            attempts: 0,
+          },
+        });
+      } catch (err: any) {
+        if (err.message?.includes('database server') || err.code === 'P1001') {
+          useMemoryFallback = true;
+        } else {
+          throw err;
+        }
+      }
+    }
+
+    if (useMemoryFallback) {
+      memoryStore.push({
+        id: 'mem_' + Date.now(),
+        userId,
+        submissionRef,
         contactType,
         contactValue: normalizedValue,
         otpHash,
+        rawOtp,
         expiresAt,
         attempts: 0,
-      },
-    });
+        createdAt: new Date(now),
+      });
+    }
 
     // Dispatch OTP via SMS or Email provider
-    await this.dispatchOtpNotification(contactType, normalizedValue, rawOtp);
+    let senderEmail: string | undefined;
+    let previewUrl: string | false | undefined;
+
+    if (contactType === ContactType.EMAIL) {
+      const emailResult = await emailService.sendOtpEmail(normalizedValue, rawOtp);
+      senderEmail = emailResult.from;
+      previewUrl = emailResult.previewUrl;
+    } else {
+      await this.dispatchOtpNotification(contactType, normalizedValue, rawOtp);
+    }
 
     return {
       success: true,
@@ -85,6 +153,8 @@ export class ContactService {
       cooldownSeconds: 60,
       contactType,
       contactValue: normalizedValue,
+      senderEmail,
+      previewUrl,
       ...(process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development'
         ? { debugOtp: rawOtp }
         : {}),
@@ -102,14 +172,28 @@ export class ContactService {
     submissionRef?: string
   ): Promise<VerifyOtpResult> {
     const normalizedValue = this.normalizeContact(contactType, contactValue);
+    let record: any = null;
+    let useMemoryFallback = false;
 
-    const record = await this.db.contactVerification.findFirst({
-      where: {
-        contactType,
-        contactValue: normalizedValue,
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+    try {
+      record = await this.db.contactVerification.findFirst({
+        where: {
+          contactType,
+          contactValue: normalizedValue,
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+    } catch (err: any) {
+      if (err.message?.includes('database server') || err.code === 'P1001') {
+        useMemoryFallback = true;
+        const memoryMatches = memoryStore
+          .filter((m) => m.contactType === contactType && m.contactValue === normalizedValue)
+          .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+        record = memoryMatches[0] || null;
+      } else {
+        throw err;
+      }
+    }
 
     if (!record) {
       throw new Error('No verification code found for this contact. Please request a new code.');
@@ -129,24 +213,36 @@ export class ContactService {
     const isMatch = await bcrypt.compare(otp.trim(), record.otpHash);
     if (!isMatch) {
       // Increment attempt counter
-      await this.db.contactVerification.update({
-        where: { id: record.id },
-        data: { attempts: { increment: 1 } },
-      });
+      if (!useMemoryFallback && record.id && !record.id.startsWith('mem_')) {
+        try {
+          await this.db.contactVerification.update({
+            where: { id: record.id },
+            data: { attempts: { increment: 1 } },
+          });
+        } catch {}
+      } else {
+        record.attempts += 1;
+      }
       const remaining = MAX_ATTEMPTS - (record.attempts + 1);
       throw new Error(`Invalid verification code. ${remaining} attempt(s) remaining.`);
     }
 
     // Mark as verified
     const verifiedAt = new Date();
-    await this.db.contactVerification.update({
-      where: { id: record.id },
-      data: {
-        verifiedAt,
-        userId: userId || record.userId,
-        submissionRef: submissionRef || record.submissionRef,
-      },
-    });
+    if (!useMemoryFallback && record.id && !record.id.startsWith('mem_')) {
+      try {
+        await this.db.contactVerification.update({
+          where: { id: record.id },
+          data: {
+            verifiedAt,
+            userId: userId || record.userId,
+            submissionRef: submissionRef || record.submissionRef,
+          },
+        });
+      } catch {}
+    } else {
+      record.verifiedAt = verifiedAt;
+    }
 
     return {
       success: true,
@@ -180,17 +276,30 @@ export class ContactService {
     const normalizedValue = this.normalizeContact(contactType, contactValue);
     const minVerifiedAt = new Date(Date.now() - maxAgeHours * 60 * 60 * 1000);
 
-    const record = await this.db.contactVerification.findFirst({
-      where: {
-        contactType,
-        contactValue: normalizedValue,
-        verifiedAt: { gte: minVerifiedAt },
-        ...(userId ? { userId } : {}),
-      },
-      orderBy: { verifiedAt: 'desc' },
-    });
-
-    return Boolean(record);
+    try {
+      const record = await this.db.contactVerification.findFirst({
+        where: {
+          contactType,
+          contactValue: normalizedValue,
+          verifiedAt: { gte: minVerifiedAt },
+          ...(userId ? { userId } : {}),
+        },
+        orderBy: { verifiedAt: 'desc' },
+      });
+      return Boolean(record);
+    } catch (err: any) {
+      if (err.message?.includes('database server') || err.code === 'P1001') {
+        const memMatch = memoryStore.find(
+          (m) =>
+            m.contactType === contactType &&
+            m.contactValue === normalizedValue &&
+            m.verifiedAt &&
+            m.verifiedAt >= minVerifiedAt
+        );
+        return Boolean(memMatch);
+      }
+      return false;
+    }
   }
 
   private generate6DigitOtp(): string {
@@ -221,8 +330,6 @@ export class ContactService {
     recipient: string,
     otp: string
   ): Promise<void> {
-    // In production, integrate Twilio (SMS) / SendGrid / Resend (Email).
-    // In development and testing, log clearly for seamless local evaluation.
     if (type === ContactType.PHONE) {
       console.log(`[SMS-OTP-GATEWAY] To: ${recipient} | Code: [${otp}] | Expiry: 5 mins`);
     } else {
@@ -232,4 +339,3 @@ export class ContactService {
 }
 
 export const contactService = new ContactService();
-

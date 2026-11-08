@@ -19,8 +19,10 @@ import {
   ArrowLeft,
   Loader2,
   Search,
+  Sparkles,
 } from 'lucide-react';
 import LocationPicker from '@/components/map/LocationPicker';
+import { geocodePlace } from '@/lib/geocoding';
 import {
   sendContactOtp,
   verifyContactOtp,
@@ -75,26 +77,28 @@ export default function EventCreationWizard() {
   const [locality, setLocality] = useState('Kunnamkulam');
   const [neighborhood, setNeighborhood] = useState('');
   const [address, setAddress] = useState('');
-  const [coords, setCoords] = useState<{ lat: number; lng: number }>({ lat: 10.65, lng: 76.07 });
+  const [coords, setCoords] = useState<{ lat: number; lng: number }>({ lat: 10.6508, lng: 76.0694 });
+  const [geocodingBusy, setGeocodingBusy] = useState(false);
+  const [geocodedPlaceName, setGeocodedPlaceName] = useState<string | null>('Kunnamkulam, Thrissur, Kerala');
   const [costType, setCostType] = useState('Free');
   const [accessibility, setAccessibility] = useState('');
 
-  // Contact Info & OTP
+  // Contact Info & OTP (Email verification required)
   const [organizerName, setOrganizerName] = useState('');
   const [organizerPhone, setOrganizerPhone] = useState('');
   const [organizerEmail, setOrganizerEmail] = useState('');
-  const [phoneVerified, setPhoneVerified] = useState(false);
   const [emailVerified, setEmailVerified] = useState(false);
-  const [phoneVerifiedAt, setPhoneVerifiedAt] = useState<string | null>(null);
   const [emailVerifiedAt, setEmailVerifiedAt] = useState<string | null>(null);
 
-  // OTP Verification Modal/Box State
-  const [activeOtpMethod, setActiveOtpMethod] = useState<'PHONE' | 'EMAIL' | null>(null);
+  // Email OTP State
+  const [otpSent, setOtpSent] = useState(false);
   const [otpInput, setOtpInput] = useState('');
   const [otpCooldown, setOtpCooldown] = useState(0);
   const [otpBusy, setOtpBusy] = useState(false);
   const [otpError, setOtpError] = useState<string | null>(null);
   const [otpSuccessMsg, setOtpSuccessMsg] = useState<string | null>(null);
+  const [senderEmail, setSenderEmail] = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   // External Resources
   const [resources, setResources] = useState<ResourceItem[]>([
@@ -126,28 +130,59 @@ export default function EventCreationWizard() {
     }
   }, [otpCooldown]);
 
-  // Handle Contact Changes (Invalidate verification if contact changes)
-  const handlePhoneChange = (val: string) => {
-    if (phoneVerified && val !== organizerPhone) {
-      setPhoneVerified(false);
-      setPhoneVerifiedAt(null);
+  // Automatic Place Geocoding: when user types a place, automatically move map
+  useEffect(() => {
+    const query = address.trim() || locality.trim();
+    if (!query || query.length < 2) return;
+
+    const timer = setTimeout(async () => {
+      setGeocodingBusy(true);
+      try {
+        const result = await geocodePlace(query);
+        if (result) {
+          setCoords({ lat: result.lat, lng: result.lng });
+          setGeocodedPlaceName(result.displayName);
+        }
+      } catch (err) {
+        console.warn('Geocoding error:', err);
+      } finally {
+        setGeocodingBusy(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [locality, address]);
+
+  // Handle direct preset place select
+  const handleSelectPlacePreset = async (placeName: string) => {
+    setLocality(placeName);
+    setGeocodingBusy(true);
+    try {
+      const result = await geocodePlace(placeName);
+      if (result) {
+        setCoords({ lat: result.lat, lng: result.lng });
+        setGeocodedPlaceName(result.displayName);
+      }
+    } finally {
+      setGeocodingBusy(false);
     }
-    setOrganizerPhone(val);
   };
 
+  // Handle Email Changes (Invalidate verification if email changes)
   const handleEmailChange = (val: string) => {
     if (emailVerified && val !== organizerEmail) {
       setEmailVerified(false);
       setEmailVerifiedAt(null);
+      setOtpSent(false);
+      setOtpInput('');
     }
     setOrganizerEmail(val);
   };
 
-  // Trigger Send OTP
-  const handleSendOtp = async (method: 'PHONE' | 'EMAIL') => {
-    const value = method === 'PHONE' ? organizerPhone : organizerEmail;
-    if (!value.trim()) {
-      setOtpError(`Please enter a valid ${method === 'PHONE' ? 'phone number' : 'email address'} first.`);
+  // Send Email OTP from sample mail
+  const handleSendEmailOtp = async () => {
+    if (!organizerEmail.trim() || !organizerEmail.includes('@')) {
+      setOtpError('Please enter a valid organizer email address.');
       return;
     }
 
@@ -155,41 +190,42 @@ export default function EventCreationWizard() {
     setOtpError(null);
     setOtpSuccessMsg(null);
     try {
-      const res = await sendContactOtp(method, value);
-      setActiveOtpMethod(method);
+      const res = await sendContactOtp('EMAIL', organizerEmail);
+      setOtpSent(true);
       setOtpCooldown(res.data?.cooldownSeconds || 60);
-      setOtpSuccessMsg(res.message);
+      setSenderEmail(res.data?.senderEmail || 'verify@paaramparik.culture');
+      setPreviewUrl(res.data?.previewUrl || null);
+
+      let msg = `Verification email sent from ${res.data?.senderEmail || 'verify@paaramparik.culture'} to ${organizerEmail}`;
       if (res.data?.debugOtp) {
-        setOtpSuccessMsg(`${res.message} (Test OTP: ${res.data.debugOtp})`);
+        msg += ` (OTP Code: ${res.data.debugOtp})`;
       }
+      setOtpSuccessMsg(msg);
     } catch (err: any) {
-      setOtpError(err.message || 'Failed to send OTP');
+      setOtpError(err.message || 'Failed to send verification email. Please check the address.');
     } finally {
       setOtpBusy(false);
     }
   };
 
-  // Verify OTP
-  const handleVerifyOtp = async () => {
-    if (!activeOtpMethod || !otpInput.trim()) return;
-    const value = activeOtpMethod === 'PHONE' ? organizerPhone : organizerEmail;
+  // Verify Email OTP
+  const handleVerifyEmailOtp = async () => {
+    if (!otpInput.trim() || otpInput.trim().length !== 6) {
+      setOtpError('Please enter the 6-digit code received in your email.');
+      return;
+    }
 
     setOtpBusy(true);
     setOtpError(null);
     try {
-      const res = await verifyContactOtp(activeOtpMethod, value, otpInput);
-      if (activeOtpMethod === 'PHONE') {
-        setPhoneVerified(true);
-        setPhoneVerifiedAt(res.data?.verifiedAt || new Date().toISOString());
-      } else {
-        setEmailVerified(true);
-        setEmailVerifiedAt(res.data?.verifiedAt || new Date().toISOString());
-      }
-      setActiveOtpMethod(null);
+      const res = await verifyContactOtp('EMAIL', organizerEmail, otpInput.trim());
+      setEmailVerified(true);
+      setEmailVerifiedAt(res.data?.verifiedAt || new Date().toISOString());
+      setOtpSent(false);
       setOtpInput('');
-      setOtpSuccessMsg(`${activeOtpMethod === 'PHONE' ? 'Phone' : 'Email'} verified successfully!`);
+      setOtpSuccessMsg('Email address verified successfully!');
     } catch (err: any) {
-      setOtpError(err.message || 'Invalid OTP code');
+      setOtpError(err.message || 'Invalid or expired OTP code.');
     } finally {
       setOtpBusy(false);
     }
@@ -248,12 +284,16 @@ export default function EventCreationWizard() {
       }
     }
     if (step === 2) {
-      if (!organizerName) {
-        alert('Please enter the organizer name.');
+      if (!organizerName.trim()) {
+        alert('Please enter the organizer or troupe name.');
         return;
       }
-      if (!phoneVerified && !emailVerified) {
-        alert('Contact verification required: Please verify either your phone number or email address via OTP.');
+      if (!organizerEmail.trim()) {
+        alert('Please enter the organizer email address.');
+        return;
+      }
+      if (!emailVerified) {
+        alert('Email verification required: Please verify your email address via the OTP code before proceeding.');
         return;
       }
     }
@@ -305,7 +345,7 @@ export default function EventCreationWizard() {
         organizerName,
         organizerPhone: organizerPhone || undefined,
         organizerEmail: organizerEmail || undefined,
-        phoneVerified,
+        phoneVerified: false,
         emailVerified,
         accessibility: accessibility || undefined,
         resources: validResources,
@@ -363,7 +403,7 @@ export default function EventCreationWizard() {
         <div className="flex items-center justify-between text-xs font-semibold text-cream-muted">
           {[
             { num: 1, label: 'Details' },
-            { num: 2, label: 'Contact Verification' },
+            { num: 2, label: 'Email Verification' },
             { num: 3, label: 'Resources' },
             { num: 4, label: 'Duplicate Check' },
             { num: 5, label: 'Terms & Submit' },
@@ -542,18 +582,54 @@ export default function EventCreationWizard() {
             </div>
 
             <div className="border-t border-crimson-800/60 pt-4">
+              <div className="mb-3">
+                <span className="text-xs text-cream-muted font-semibold">Quick Cultural Hubs:</span>
+                <div className="mt-1.5 flex flex-wrap gap-1.5">
+                  {[
+                    'Kunnamkulam',
+                    'Thrissur',
+                    'Guruvayur',
+                    'Cheruthuruthy',
+                    'Irinjalakuda',
+                    'Kochi',
+                    'Palakkad',
+                    'Kozhikode',
+                    'Trivandrum',
+                  ].map((place) => (
+                    <button
+                      key={place}
+                      type="button"
+                      onClick={() => handleSelectPlacePreset(place)}
+                      className={`rounded-full px-2.5 py-0.5 text-xs transition-colors ${
+                        locality.toLowerCase() === place.toLowerCase()
+                          ? 'bg-saffron-500 font-bold text-crimson-950'
+                          : 'border border-crimson-800 bg-crimson-900/50 text-cream-muted hover:border-saffron-500/50 hover:text-cream'
+                      }`}
+                    >
+                      {place}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="label" htmlFor="locality">Locality / Town *</label>
-                  <input
-                    id="locality"
-                    type="text"
-                    className="input"
-                    placeholder="e.g. Kunnamkulam"
-                    value={locality}
-                    onChange={(e) => setLocality(e.target.value)}
-                    required
-                  />
+                  <label className="label flex items-center justify-between" htmlFor="locality">
+                    <span>Locality / Town *</span>
+                    <span className="text-[11px] font-normal text-saffron-400">Auto-moves map pin</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      id="locality"
+                      type="text"
+                      className="input pr-8"
+                      placeholder="e.g. Kunnamkulam, Thrissur, Kochi..."
+                      value={locality}
+                      onChange={(e) => setLocality(e.target.value)}
+                      required
+                    />
+                    <MapPin size={16} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-saffron-400/80 pointer-events-none" />
+                  </div>
                 </div>
                 <div>
                   <label className="label" htmlFor="neighborhood">Neighborhood / Landmark</label>
@@ -561,7 +637,7 @@ export default function EventCreationWizard() {
                     id="neighborhood"
                     type="text"
                     className="input"
-                    placeholder="e.g. Near Bhavana Nagar"
+                    placeholder="e.g. Near Bhavana Nagar / Vadakkumnathan Temple"
                     value={neighborhood}
                     onChange={(e) => setNeighborhood(e.target.value)}
                   />
@@ -581,21 +657,40 @@ export default function EventCreationWizard() {
                 />
               </div>
 
-              <div className="mt-4">
-                <label className="label">Map Coordinates (Pin Location)</label>
-                <p className="mb-2 text-xs text-cream-muted">
-                  Click on the map or drag the pin to position the exact venue coordinates:
-                </p>
-                <div className="overflow-hidden rounded-lg border border-crimson-800">
+              {/* Auto-geocoding live notification */}
+              <div className="mt-2 min-h-[22px]">
+                {geocodingBusy ? (
+                  <div className="flex items-center gap-1.5 text-xs text-saffron-400 animate-pulse">
+                    <Loader2 size={13} className="animate-spin shrink-0" />
+                    <span>Locating place and updating map pin...</span>
+                  </div>
+                ) : geocodedPlaceName ? (
+                  <div className="flex items-center gap-1.5 text-xs text-emerald-400">
+                    <CheckCircle2 size={13} className="shrink-0" />
+                    <span>
+                      Map automatically centered on: <strong className="text-cream">{geocodedPlaceName}</strong>
+                    </span>
+                  </div>
+                ) : null}
+              </div>
+
+              <div className="mt-3">
+                <div className="mb-2 flex flex-wrap items-center justify-between gap-1">
+                  <label className="label mb-0">Venue Map Pin (Auto-Synced with Typed Place)</label>
+                  <span className="text-[11px] text-cream-muted">
+                    Drag pin or click map to refine exact venue position
+                  </span>
+                </div>
+                <div className="overflow-hidden rounded-lg border border-crimson-800 shadow-md">
                   <LocationPicker
                     lat={coords.lat}
                     lng={coords.lng}
                     onPick={(lat: number, lng: number) => setCoords({ lat, lng })}
                   />
                 </div>
-                <div className="mt-2 flex gap-4 text-xs font-mono text-cream-muted">
-                  <span>Lat: {coords.lat.toFixed(4)}</span>
-                  <span>Lng: {coords.lng.toFixed(4)}</span>
+                <div className="mt-2 flex items-center justify-between text-xs font-mono text-cream-muted">
+                  <span>Latitude: {coords.lat.toFixed(5)}</span>
+                  <span>Longitude: {coords.lng.toFixed(5)}</span>
                 </div>
               </div>
             </div>
@@ -630,13 +725,13 @@ export default function EventCreationWizard() {
           </div>
         )}
 
-        {/* STEP 2: CONTACT INFORMATION & VERIFICATION */}
+        {/* STEP 2: ORGANIZER INFO & EMAIL VERIFICATION */}
         {step === 2 && (
           <div className="space-y-6">
             <div>
-              <h2 className="text-2xl font-bold">2. Contact Information & Verification</h2>
+              <h2 className="text-2xl font-bold">2. Organizer & Email Verification</h2>
               <p className="mt-1 text-sm text-cream-muted">
-                To prevent fraud and maintain accountability, you must verify at least one contact method (Mobile OTP or Email OTP) before submitting.
+                To prevent fraud and maintain accountability, you must verify your organizer email address via a 6-digit verification code. Email is dispatched from our sample mail service.
               </p>
             </div>
 
@@ -646,88 +741,56 @@ export default function EventCreationWizard() {
                 id="organizerName"
                 type="text"
                 className="input"
-                placeholder="e.g. Kunnamkulam Heritage Society"
+                placeholder="e.g. Kunnamkulam Heritage Society / Kalamandalam Troupe"
                 value={organizerName}
                 onChange={(e) => setOrganizerName(e.target.value)}
                 required
               />
             </div>
 
-            {/* Mobile Phone Verification Box */}
-            <div className={`rounded-xl border p-5 transition-colors ${phoneVerified ? 'border-emerald-500/50 bg-emerald-950/20' : 'border-crimson-800/80 bg-crimson-950/40'}`}>
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <Phone size={18} className={phoneVerified ? 'text-emerald-400' : 'text-saffron-500'} />
-                  <span className="font-semibold">Mobile Phone Number (SMS OTP)</span>
-                </div>
-                {phoneVerified ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-900/60 px-3 py-0.5 text-xs font-semibold text-emerald-300">
-                    <CheckCircle2 size={13} /> Verified
-                  </span>
-                ) : (
-                  <span className="text-xs text-amber-400">Not verified</span>
-                )}
-              </div>
-
-              <div className="mt-3 flex gap-2">
+            {/* Optional Phone Number (No OTP required) */}
+            <div>
+              <label className="label flex items-center justify-between" htmlFor="organizerPhone">
+                <span>Contact Phone Number (Optional)</span>
+                <span className="text-[11px] font-normal text-cream-muted">No OTP required</span>
+              </label>
+              <div className="relative">
                 <input
+                  id="organizerPhone"
                   type="tel"
-                  className="input flex-1"
-                  placeholder="+91 9876543210"
+                  className="input pl-10"
+                  placeholder="+91 9876543210 (Optional contact for visitors)"
                   value={organizerPhone}
-                  onChange={(e) => handlePhoneChange(e.target.value)}
-                  disabled={phoneVerified}
+                  onChange={(e) => setOrganizerPhone(e.target.value)}
                 />
-                {!phoneVerified ? (
-                  <button
-                    type="button"
-                    disabled={otpBusy || otpCooldown > 0 || !organizerPhone.trim()}
-                    onClick={() => handleSendOtp('PHONE')}
-                    className="btn-saffron whitespace-nowrap px-4 py-2 text-sm"
-                  >
-                    {otpBusy && activeOtpMethod === 'PHONE' ? (
-                      <Loader2 size={16} className="animate-spin" />
-                    ) : otpCooldown > 0 && activeOtpMethod === 'PHONE' ? (
-                      `Resend (${otpCooldown}s)`
-                    ) : (
-                      'Send OTP'
-                    )}
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setPhoneVerified(false);
-                      setPhoneVerifiedAt(null);
-                    }}
-                    className="btn-ghost text-xs text-cream-muted"
-                  >
-                    Change
-                  </button>
-                )}
+                <Phone size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-cream-muted pointer-events-none" />
               </div>
-              {phoneVerifiedAt && (
-                <p className="mt-2 text-xs text-emerald-400">
-                  Verified at: {new Date(phoneVerifiedAt).toLocaleTimeString()}
-                </p>
-              )}
+              <p className="mt-1 text-[11px] text-cream-muted">
+                Optional public telephone number for attendees inquiring about venue directions or passes.
+              </p>
             </div>
 
-            {/* Email Address Verification Box */}
+            {/* Email Address Verification Box (Mandatory OTP) */}
             <div className={`rounded-xl border p-5 transition-colors ${emailVerified ? 'border-emerald-500/50 bg-emerald-950/20' : 'border-crimson-800/80 bg-crimson-950/40'}`}>
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <Mail size={18} className={emailVerified ? 'text-emerald-400' : 'text-saffron-500'} />
-                  <span className="font-semibold">Email Address (Email OTP)</span>
+                  <span className="font-semibold">Organizer Email Address (Verification Required) *</span>
                 </div>
                 {emailVerified ? (
                   <span className="inline-flex items-center gap-1 rounded-full bg-emerald-900/60 px-3 py-0.5 text-xs font-semibold text-emerald-300">
-                    <CheckCircle2 size={13} /> Verified
+                    <CheckCircle2 size={13} /> Verified Email
                   </span>
                 ) : (
-                  <span className="text-xs text-amber-400">Not verified</span>
+                  <span className="inline-flex items-center gap-1 text-xs text-amber-400">
+                    <ShieldCheck size={14} /> Verification Required
+                  </span>
                 )}
               </div>
+
+              <p className="mt-1 text-xs text-cream-muted">
+                A verification email with your 6-digit code will be dispatched from our sample mail sender ({senderEmail || 'verify@paaramparik.culture'}).
+              </p>
 
               <div className="mt-3 flex gap-2">
                 <input
@@ -737,20 +800,23 @@ export default function EventCreationWizard() {
                   value={organizerEmail}
                   onChange={(e) => handleEmailChange(e.target.value)}
                   disabled={emailVerified}
+                  required
                 />
                 {!emailVerified ? (
                   <button
                     type="button"
-                    disabled={otpBusy || otpCooldown > 0 || !organizerEmail.trim()}
-                    onClick={() => handleSendOtp('EMAIL')}
-                    className="btn-saffron whitespace-nowrap px-4 py-2 text-sm"
+                    disabled={otpBusy || otpCooldown > 0 || !organizerEmail.trim() || !organizerEmail.includes('@')}
+                    onClick={handleSendEmailOtp}
+                    className="btn-saffron whitespace-nowrap px-4 py-2 text-sm font-semibold"
                   >
-                    {otpBusy && activeOtpMethod === 'EMAIL' ? (
+                    {otpBusy ? (
                       <Loader2 size={16} className="animate-spin" />
-                    ) : otpCooldown > 0 && activeOtpMethod === 'EMAIL' ? (
+                    ) : otpCooldown > 0 ? (
                       `Resend (${otpCooldown}s)`
+                    ) : otpSent ? (
+                      'Resend Code'
                     ) : (
-                      'Send Code'
+                      'Send Verification Email'
                     )}
                   </button>
                 ) : (
@@ -759,62 +825,84 @@ export default function EventCreationWizard() {
                     onClick={() => {
                       setEmailVerified(false);
                       setEmailVerifiedAt(null);
+                      setOtpSent(false);
                     }}
-                    className="btn-ghost text-xs text-cream-muted"
+                    className="btn-ghost text-xs text-cream-muted hover:text-rose-400"
                   >
                     Change
                   </button>
                 )}
               </div>
+
               {emailVerifiedAt && (
-                <p className="mt-2 text-xs text-emerald-400">
-                  Verified at: {new Date(emailVerifiedAt).toLocaleTimeString()}
-                </p>
+                <div className="mt-2.5 flex items-center gap-2 text-xs text-emerald-400">
+                  <CheckCircle2 size={14} />
+                  <span>
+                    Verified organizer email &bull; {new Date(emailVerifiedAt).toLocaleTimeString()}
+                  </span>
+                </div>
               )}
             </div>
 
-            {/* OTP Entry Dialog Area */}
-            {activeOtpMethod && (
-              <div className="rounded-xl border border-saffron-500/60 bg-crimson-900/90 p-5 shadow-lg">
-                <h3 className="flex items-center gap-2 font-bold text-saffron-400">
-                  <ShieldCheck size={18} />
-                  Enter 6-Digit Verification Code
-                </h3>
-                <p className="mt-1 text-xs text-cream-muted">
-                  We sent a 6-digit code to{' '}
-                  <span className="font-mono text-cream">
-                    {activeOtpMethod === 'PHONE' ? organizerPhone : organizerEmail}
-                  </span>
-                  . Code expires in 5 minutes.
+            {/* Email OTP Entry Dialog Area */}
+            {otpSent && !emailVerified && (
+              <div className="rounded-xl border border-saffron-500/60 bg-crimson-900/90 p-5 shadow-xl animate-in fade-in slide-in-from-top-2 duration-300">
+                <div className="flex items-center justify-between">
+                  <h3 className="flex items-center gap-2 font-bold text-saffron-400 text-sm">
+                    <ShieldCheck size={18} />
+                    Enter 6-Digit Email Verification Code
+                  </h3>
+                  <span className="text-xs font-mono text-saffron-300/80">Expires in 5m</span>
+                </div>
+
+                <p className="mt-1 text-xs text-cream-muted leading-relaxed">
+                  We sent a 6-digit confirmation code from sample mail{' '}
+                  <strong className="text-saffron-300">{senderEmail || 'verify@paaramparik.culture'}</strong> to{' '}
+                  <strong className="text-cream">{organizerEmail}</strong>.
                 </p>
 
+                {previewUrl && (
+                  <div className="mt-2.5 rounded-lg border border-saffron-500/30 bg-saffron-950/60 p-2.5 text-xs">
+                    <span className="text-saffron-300">📬 Sample Mail Preview: </span>
+                    <a
+                      href={previewUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-bold text-saffron-400 underline hover:text-saffron-200 inline-flex items-center gap-1"
+                    >
+                      Open Ethereal Mail Inbox <ExternalLink size={12} />
+                    </a>
+                  </div>
+                )}
+
                 {otpSuccessMsg && (
-                  <p className="mt-2 rounded bg-saffron-950/60 p-2 text-xs text-saffron-300">
+                  <p className="mt-2 rounded bg-saffron-950/50 p-2 text-xs text-saffron-300 border border-saffron-500/20">
                     {otpSuccessMsg}
                   </p>
                 )}
 
-                <div className="mt-3 flex gap-2">
+                <div className="mt-4 flex flex-wrap gap-2">
                   <input
                     type="text"
                     maxLength={6}
-                    className="input w-48 text-center font-mono text-xl tracking-widest"
+                    className="input w-48 text-center font-mono text-xl tracking-widest font-bold"
                     placeholder="123456"
                     value={otpInput}
                     onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, ''))}
+                    autoFocus
                   />
                   <button
                     type="button"
-                    disabled={otpBusy || otpInput.length !== 6}
-                    onClick={handleVerifyOtp}
-                    className="btn-saffron px-5 py-2 font-bold"
+                    disabled={otpBusy || otpInput.trim().length !== 6}
+                    onClick={handleVerifyEmailOtp}
+                    className="btn-saffron px-5 py-2 font-bold text-sm shadow-md"
                   >
                     {otpBusy ? <Loader2 size={16} className="animate-spin" /> : 'Confirm Code'}
                   </button>
                   <button
                     type="button"
                     onClick={() => {
-                      setActiveOtpMethod(null);
+                      setOtpSent(false);
                       setOtpInput('');
                       setOtpError(null);
                     }}
@@ -824,14 +912,19 @@ export default function EventCreationWizard() {
                   </button>
                 </div>
 
-                {otpError && <p className="mt-2 text-xs text-rose-400">{otpError}</p>}
+                {otpError && (
+                  <div className="mt-2 flex items-center gap-1.5 text-xs text-rose-400">
+                    <AlertTriangle size={14} className="shrink-0" />
+                    <span>{otpError}</span>
+                  </div>
+                )}
               </div>
             )}
 
-            <div className="rounded-lg bg-crimson-900/40 p-4 text-xs text-cream-muted flex gap-2">
+            <div className="rounded-lg bg-crimson-900/40 p-4 text-xs text-cream-muted flex gap-2.5">
               <HelpCircle size={16} className="mt-0.5 shrink-0 text-saffron-500" />
               <span>
-                <strong>Why verify?</strong> Contact verification protects the platform from spam, fictitious events, and unauthorized submissions. Modifying a verified contact resets its status and requires new verification.
+                <strong>Why verify?</strong> Email verification links your cultural submission to an authentic organizer or troupe identity. Submissions remain unpublished until reviewed by platform administrators.
               </span>
             </div>
           </div>
@@ -1094,7 +1187,7 @@ export default function EventCreationWizard() {
                 <div>Locality: <span className="text-cream">{locality}</span></div>
                 <div>Date: <span className="text-cream">{eventDate} ({startTime} - {endTime})</span></div>
                 <div>Category: <span className="text-cream">{category} ({artForm})</span></div>
-                <div>Verified Contact: <span className="text-emerald-400 font-semibold">{phoneVerified ? 'Phone ✓' : ''} {emailVerified ? 'Email ✓' : ''}</span></div>
+                <div>Verified Email: <span className="text-emerald-400 font-semibold">{organizerEmail} ✓</span></div>
                 <div>Resources: <span className="text-cream">{resources.length} link(s) attached</span></div>
               </div>
             </div>
