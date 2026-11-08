@@ -63,14 +63,16 @@ export function filterListings(listings: Listing[], f: Filters): Listing[] {
     if (f.experience && l.experience_type !== f.experience) return false;
 
     // Location
-    if (
-      f.location &&
-      ![l.location_name, l.district, l.address]
-        .join(' ')
-        .toLowerCase()
-        .includes(f.location.toLowerCase())
-    )
-      return false;
+    if (f.location) {
+      const locLower = f.location.toLowerCase().trim();
+      const combined = [l.location_name, l.district, l.address].join(' ').toLowerCase();
+      if (locLower === 'northeast' || locLower.includes('northeast')) {
+        const neStates = ['assam', 'nagaland', 'manipur', 'meghalaya', 'mizoram', 'tripura', 'arunachal', 'sikkim'];
+        if (!neStates.some((s) => combined.includes(s))) return false;
+      } else if (!combined.includes(locLower)) {
+        return false;
+      }
+    }
 
     // Organiser / Practitioner
     if (f.organiser && !(l.practitioner_name ?? '').toLowerCase().includes(f.organiser.toLowerCase()))

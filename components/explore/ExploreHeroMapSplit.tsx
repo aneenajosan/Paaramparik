@@ -21,6 +21,21 @@ import { EXPERIENCE_LABEL } from '@/lib/listing-meta';
 import type { Category, Listing } from '@/types';
 import type { Filters } from '@/lib/filter';
 
+const FAMOUS_STATES = [
+  { label: 'All India', value: '', icon: '🇮🇳' },
+  { label: 'Kerala', value: 'Kerala', icon: '🌴' },
+  { label: 'Tamil Nadu', value: 'Tamil Nadu', icon: '🛕' },
+  { label: 'Karnataka', value: 'Karnataka', icon: '🐘' },
+  { label: 'Maharashtra', value: 'Maharashtra', icon: '🥁' },
+  { label: 'Rajasthan', value: 'Rajasthan', icon: '🐪' },
+  { label: 'West Bengal', value: 'West Bengal', icon: '🎭' },
+  { label: 'Odisha', value: 'Odisha', icon: '🛞' },
+  { label: 'Uttar Pradesh', value: 'Uttar Pradesh', icon: '🪔' },
+  { label: 'Gujarat', value: 'Gujarat', icon: '🪅' },
+  { label: 'Assam & NE', value: 'Northeast', icon: '🦏' },
+  { label: 'Punjab', value: 'Punjab', icon: '🌾' },
+];
+
 interface ExploreHeroMapSplitProps {
   listings: Listing[];
   totalListingsCount?: number;
@@ -48,6 +63,18 @@ export default function ExploreHeroMapSplit({
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const toolbarRef = useRef<HTMLDivElement | null>(null);
+
+  // Listen for state selection from map clicks or marker popups
+  useEffect(() => {
+    const handleSelectState = (e: Event) => {
+      const customEvent = e as CustomEvent<{ state: string }>;
+      if (customEvent.detail?.state) {
+        onFilterChange('location', customEvent.detail.state);
+      }
+    };
+    window.addEventListener('lcm:select-state', handleSelectState);
+    return () => window.removeEventListener('lcm:select-state', handleSelectState);
+  }, [onFilterChange]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -549,9 +576,66 @@ export default function ExploreHeroMapSplit({
               )}
             </div>
 
+            {/* Interactive Famous State Cultural Strip */}
+            <div className="flex items-center gap-1.5 overflow-x-auto px-3 py-2 bg-crimson-950/90 border-b border-crimson-800/60 scrollbar-none text-xs z-20">
+              <span className="text-[11px] font-bold text-cream-muted uppercase tracking-wider shrink-0 mr-1">
+                Explore Culture:
+              </span>
+              {FAMOUS_STATES.map((st) => {
+                const isActive =
+                  st.value === ''
+                    ? !filters.location
+                    : (filters.location || '').toLowerCase().includes(st.value.toLowerCase()) ||
+                      (st.value === 'Northeast' &&
+                        ['assam', 'nagaland', 'manipur', 'meghalaya', 'northeast'].some((n) =>
+                          (filters.location || '').toLowerCase().includes(n)
+                        ));
+                return (
+                  <button
+                    key={st.label}
+                    type="button"
+                    onClick={() => onFilterChange('location', st.value)}
+                    className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                      isActive
+                        ? 'bg-saffron-500 text-crimson-950 font-bold shadow-sm'
+                        : 'bg-crimson-900/70 text-cream/90 hover:bg-crimson-800 hover:text-white border border-crimson-800/60'
+                    }`}
+                  >
+                    <span>{st.icon}</span>
+                    <span>{st.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Active State Feedback Bar */}
+            {filters.location && (
+              <div className="flex items-center justify-between px-3 py-1.5 bg-saffron-500/15 border-b border-saffron-500/30 text-xs text-saffron-300 z-20">
+                <div className="flex items-center gap-1.5">
+                  <Sparkles size={12} className="text-saffron-400" />
+                  <span>
+                    Showing famous cultural traditions in <strong>{filters.location}</strong> ({listings.length} traditions found)
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onFilterChange('location', '')}
+                  className="text-[11px] underline hover:text-white ml-2 font-semibold cursor-pointer"
+                >
+                  Show All India
+                </button>
+              </div>
+            )}
+
             {/* Interactive Map */}
             <div className="relative h-[360px] sm:h-[420px] w-full overflow-hidden rounded-b-3xl z-10">
-              <CultureMap listings={listings} user={userPosition} height="100%" scrollZoom={false} />
+              <CultureMap
+                listings={listings}
+                user={userPosition}
+                height="100%"
+                scrollZoom={false}
+                onSelectState={(st) => onFilterChange('location', st)}
+              />
             </div>
           </div>
         </div>

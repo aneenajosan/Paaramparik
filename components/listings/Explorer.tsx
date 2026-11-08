@@ -282,7 +282,7 @@ export default function Explorer({
                 Cultural Directory
               </h1>
               <p className="text-sm leading-relaxed text-cream-muted max-w-2xl">
-                Explore verified heritage places, master artists, traditional performances, craft workshops and seasonal festivals across Kerala. Filter by art form, location, or experience.
+                Explore verified heritage places, master artists, traditional performances, craft workshops and seasonal festivals across Indian states and living cultural traditions. Filter by art form, location, or experience.
               </p>
             </div>
           ) : (
@@ -471,7 +471,12 @@ export default function Explorer({
                 </div>
               ) : view === 'map' ? (
                 <div className="rounded-2xl overflow-hidden border border-crimson-800 bg-crimson-950">
-                  <CultureMap listings={results} user={position} height="480px" />
+                  <CultureMap
+                    listings={results}
+                    user={position}
+                    height="480px"
+                    onSelectState={(st) => setFilter('location', st)}
+                  />
                 </div>
               ) : view === 'grid' ? (
                 <div className="grid gap-5 sm:grid-cols-2">

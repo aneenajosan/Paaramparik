@@ -31,6 +31,21 @@ import { TYPES } from '@/lib/listing-meta';
 import type { Category, Listing } from '@/types';
 import type { DataSource } from '@/lib/data';
 
+const FAMOUS_STATES = [
+  { label: 'All India', value: '', icon: '🇮🇳' },
+  { label: 'Kerala', value: 'Kerala', icon: '🌴' },
+  { label: 'Tamil Nadu', value: 'Tamil Nadu', icon: '🛕' },
+  { label: 'Karnataka', value: 'Karnataka', icon: '🐘' },
+  { label: 'Maharashtra', value: 'Maharashtra', icon: '🥁' },
+  { label: 'Rajasthan', value: 'Rajasthan', icon: '🐪' },
+  { label: 'West Bengal', value: 'West Bengal', icon: '🎭' },
+  { label: 'Odisha', value: 'Odisha', icon: '🛞' },
+  { label: 'Uttar Pradesh', value: 'Uttar Pradesh', icon: '🪔' },
+  { label: 'Gujarat', value: 'Gujarat', icon: '🪅' },
+  { label: 'Assam & NE', value: 'Northeast', icon: '🦏' },
+  { label: 'Punjab', value: 'Punjab', icon: '🌾' },
+];
+
 interface HomePageClientProps {
   initialListings: Listing[];
   categories: Category[];
@@ -44,6 +59,7 @@ export default function HomePageClient({
 }: HomePageClientProps) {
   const [createdEvents, setCreatedEvents] = useState<Listing[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [selectedState, setSelectedState] = useState<string>('');
 
   // Load created events on mount & listen for live changes
   useEffect(() => {
@@ -54,6 +70,18 @@ export default function HomePageClient({
     });
 
     return () => unsubscribe();
+  }, []);
+
+  // Listen for state selection from map clicks or popups
+  useEffect(() => {
+    const handleSelectState = (e: Event) => {
+      const customEvent = e as CustomEvent<{ state: string }>;
+      if (customEvent.detail?.state) {
+        setSelectedState(customEvent.detail.state);
+      }
+    };
+    window.addEventListener('lcm:select-state', handleSelectState);
+    return () => window.removeEventListener('lcm:select-state', handleSelectState);
   }, []);
 
   // Show auto-dismiss toast
@@ -77,6 +105,22 @@ export default function HomePageClient({
 
   // Combine created events with initial listings
   const allListings = [...createdEvents, ...initialListings];
+
+  // Filter listings if a state is selected on the map or by pills
+  const displayedListings = React.useMemo(() => {
+    if (!selectedState) return allListings;
+    const s = selectedState.toLowerCase().trim();
+    if (s === 'northeast') {
+      const ne = ['assam', 'nagaland', 'manipur', 'meghalaya', 'mizoram', 'tripura', 'arunachal', 'sikkim'];
+      return allListings.filter((l) =>
+        ne.some((item) => (l.location_name || '').toLowerCase().includes(item))
+      );
+    }
+    return allListings.filter((l) =>
+      (l.location_name || '').toLowerCase().includes(s)
+    );
+  }, [allListings, selectedState]);
+
   const story = storyOfTheDay(allListings);
   const featured = TYPES.map((t) => allListings.find((l) => l.listing_type === t))
     .filter((l): l is NonNullable<typeof l> => !!l)
@@ -148,21 +192,103 @@ export default function HomePageClient({
         </div>
       </section>
 
-      {/* Front Page Interactive Map with Created Events */}
+      {/* Front Page Interactive Map with Created Events & State Cultural Discovery */}
       <section className="section container-page" id="map-section">
-        <div className="mb-6 flex items-end justify-between gap-4">
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="eyebrow">The map</p>
             <h2 className="mt-1 text-3xl">
               <span className="font-samarkan text-3xl text-saffron-400 mr-2 font-normal">Paaramparik</span>
               Cultural Map
             </h2>
+            <p className="mt-1 text-xs text-cream-muted">
+              Click any place or marker on the map to explore famous living traditions from that state.
+            </p>
           </div>
           <Link href="/explore" className="hidden items-center gap-1 text-sm font-semibold text-saffron-500 sm:flex">
-            Open full map <ArrowRight size={14} />
+            Open full explorer <ArrowRight size={14} />
           </Link>
         </div>
-        <CultureMap listings={allListings} height="420px" scrollZoom={false} />
+
+        {/* State Cultural Quick Selector Bar */}
+        <div className="mb-3 flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs">
+          <span className="text-[11px] font-bold text-cream-muted uppercase tracking-wider shrink-0 mr-1">
+            Explore State:
+          </span>
+          {FAMOUS_STATES.map((st) => {
+            const isActive =
+              st.value === ''
+                ? !selectedState
+                : selectedState.toLowerCase().includes(st.value.toLowerCase()) ||
+                  (st.value === 'Northeast' &&
+                    ['assam', 'nagaland', 'manipur', 'meghalaya', 'northeast'].some((n) =>
+                      selectedState.toLowerCase().includes(n)
+                    ));
+            return (
+              <button
+                key={st.label}
+                type="button"
+                onClick={() => setSelectedState(st.value)}
+                className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                  isActive
+                    ? 'bg-saffron-500 text-crimson-950 font-bold shadow-md'
+                    : 'bg-crimson-900/60 text-cream/90 hover:bg-crimson-800 hover:text-white border border-crimson-800/80'
+                }`}
+              >
+                <span>{st.icon}</span>
+                <span>{st.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* State Feedback Banner */}
+        {selectedState && (
+          <div className="mb-3 flex items-center justify-between rounded-xl bg-saffron-500/15 border border-saffron-500/30 px-4 py-2 text-xs text-saffron-300">
+            <div className="flex items-center gap-2">
+              <Sparkles size={14} className="text-saffron-400" />
+              <span>
+                Showing <strong>{displayedListings.length}</strong> famous cultural traditions in <strong>{selectedState}</strong>
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setSelectedState('')}
+              className="text-xs underline hover:text-white font-semibold cursor-pointer"
+            >
+              Show All India
+            </button>
+          </div>
+        )}
+
+        <CultureMap
+          listings={displayedListings}
+          height="460px"
+          scrollZoom={false}
+          onSelectState={setSelectedState}
+        />
+
+        {/* Famous Events of Selected State Section */}
+        {selectedState && displayedListings.length > 0 && (
+          <div className="mt-8 rounded-2xl border border-saffron-500/40 bg-crimson-900/40 p-6 sm:p-8 animate-in fade-in duration-300">
+            <div className="flex items-center justify-between gap-4 mb-6">
+              <div>
+                <p className="eyebrow !text-saffron-400">Famous Living Culture</p>
+                <h3 className="font-display text-2xl font-bold text-cream mt-1">
+                  Heritage & Celebrations in {selectedState}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedState('')}
+                className="text-xs text-saffron-400 hover:underline font-semibold cursor-pointer"
+              >
+                Clear Selection
+              </button>
+            </div>
+            <ListingGrid listings={displayedListings} categories={categories} />
+          </div>
+        )}
       </section>
 
       {/* RECENTLY CREATED EVENTS (Front & Center) */}
@@ -350,3 +476,4 @@ export default function HomePageClient({
     </>
   );
 }
+
