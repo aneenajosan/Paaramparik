@@ -45,7 +45,6 @@
 .leaflet-container {
   font-family: inherit;
   background: #240006;
-  cursor: grab !important;
   user-select: none;
 }
 .leaflet-container:active,
