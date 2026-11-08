@@ -45,7 +45,10 @@
 .leaflet-container {
   font-family: inherit;
   background: #240006;
+  cursor: grab !important;
   user-select: none;
+  isolation: isolate;
+  z-index: 10;
 }
 .leaflet-container:active,
 .leaflet-dragging .leaflet-container {

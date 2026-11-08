@@ -9,7 +9,7 @@ const Inner = dynamic(() => import('./CultureMapInner'), {
 export default function CultureMap(props: CultureMapProps) {
   return (
     <div
-      className="overflow-hidden border border-crimson-800 w-full h-full"
+      className="overflow-hidden border border-crimson-800 w-full h-full relative isolate z-0"
       style={{
         height: props.height || '100%',
         minHeight: props.height && props.height !== '100%' ? props.height : '360px',

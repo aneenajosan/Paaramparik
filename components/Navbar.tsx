@@ -24,7 +24,7 @@ export default function Navbar() {
   const logout = async () => { await createClient().auth.signOut(); setMenu(false); router.push('/'); router.refresh(); };
 
   return (
-    <header className="sticky top-0 z-40 bg-crimson-950/95 backdrop-blur">
+    <header className="sticky top-0 z-[1100] bg-crimson-950/95 backdrop-blur shadow-md">
       <div className="container-page flex h-16 items-center justify-between">
         <Logo />
         <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
