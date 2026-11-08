@@ -2421,3 +2421,4 @@ listings.forEach(l => {
 });
 console.log('Breakdown by state:');
 console.table(stateCounts);
+

@@ -106,3 +106,4 @@ if (process.env.NODE_ENV !== 'test') {
 
 fs.writeFileSync(path.join(__dirname, '..', 'backend', 'prisma', 'seed.ts'), fileContent, 'utf8');
 console.log('Successfully updated backend/prisma/seed.ts with', seedItems.length, 'events across all states!');
+
