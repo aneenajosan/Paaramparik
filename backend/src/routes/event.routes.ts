@@ -141,4 +141,16 @@ router.post(
   reportController.submitReport
 );
 
+/**
+ * @route   DELETE /api/events/:id
+ * @desc    Delete an event by ID
+ * @access  Public / Authenticated
+ */
+router.delete(
+  '/:id',
+  optionalAuthenticate,
+  validateParams(eventIdParamSchema),
+  eventController.deleteEvent
+);
+
 export default router;

@@ -24,6 +24,12 @@ import {
 import LocationPicker from '@/components/map/LocationPicker';
 import { geocodePlace } from '@/lib/geocoding';
 import {
+  saveCreatedEvent,
+  deleteStoredEvent,
+  buildListingFromSubmission,
+} from '@/lib/created-events';
+import type { Listing } from '@/types';
+import {
   sendContactOtp,
   verifyContactOtp,
   checkDuplicateEvent,
@@ -120,6 +126,8 @@ export default function EventCreationWizard() {
   // Submission State
   const [submitting, setSubmitting] = useState(false);
   const [submissionSuccess, setSubmissionSuccess] = useState<any>(null);
+  const [createdListing, setCreatedListing] = useState<Listing | null>(null);
+  const [deletedNotice, setDeletedNotice] = useState<string | null>(null);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
 
   // Cooldown countdown timer
@@ -354,6 +362,10 @@ export default function EventCreationWizard() {
       };
 
       const result = await submitCulturalEvent(payload);
+      const eventId = result.data?.eventId || `ev_created_${Date.now()}`;
+      const newListing = buildListingFromSubmission(eventId, payload);
+      saveCreatedEvent(newListing);
+      setCreatedListing(newListing);
       setSubmissionSuccess(result);
     } catch (err: any) {
       setSubmissionError(err.message || 'Submission failed. Please check your information and try again.');
@@ -362,29 +374,84 @@ export default function EventCreationWizard() {
     }
   };
 
-  if (submissionSuccess) {
+  const handleDeleteCurrentEvent = async () => {
+    if (!createdListing) return;
+    if (!confirm(`Are you sure you want to delete "${createdListing.title}"? This cannot be undone.`)) {
+      return;
+    }
+    await deleteStoredEvent(createdListing.id);
+    setDeletedNotice(`Event "${createdListing.title}" was deleted successfully.`);
+    setCreatedListing(null);
+    setSubmissionSuccess(null);
+    setStep(1);
+  };
+
+  if (submissionSuccess && createdListing) {
     return (
-      <div className="card mx-auto max-w-2xl p-8 text-center sm:p-12">
-        <CheckCircle2 size={56} className="mx-auto text-emerald-500" />
-        <h2 className="mt-4 text-3xl font-bold">Event Submitted Successfully!</h2>
-        <div className="mt-4 rounded-lg border border-saffron-500/30 bg-saffron-950/40 p-4 text-left">
-          <p className="text-sm font-semibold text-saffron-400">Submission Reference</p>
-          <p className="mt-1 font-mono text-sm text-cream">{submissionSuccess.data?.eventId}</p>
-          <div className="mt-3 flex items-center gap-2 text-xs text-cream-muted">
-            <span className="inline-block h-2 w-2 rounded-full bg-amber-400 animate-pulse"></span>
-            Status: <span className="font-semibold text-cream">Pending Review</span>
+      <div className="card mx-auto max-w-2xl p-8 text-center sm:p-12 animate-in fade-in duration-300">
+        <CheckCircle2 size={56} className="mx-auto text-emerald-400" />
+        <h2 className="mt-4 text-3xl font-bold">Event Created & Live on Front Page!</h2>
+        <p className="mt-2 text-sm text-cream-muted">
+          Your cultural event has been published and is now directly visible on the front page interactive map and event directory.
+        </p>
+
+        {/* Event Preview Card */}
+        <div className="mt-6 rounded-xl border border-saffron-500/40 bg-crimson-950/80 p-5 text-left shadow-xl">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-crimson-800/80 pb-3">
+            <span className="font-display text-lg font-bold text-cream">{createdListing.title}</span>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-950/90 border border-emerald-500/60 px-3 py-0.5 text-xs font-semibold text-emerald-300">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              Live on Front Page
+            </span>
+          </div>
+
+          <div className="mt-3 grid grid-cols-2 gap-3 text-xs text-cream-muted">
+            <div>
+              <span className="text-saffron-400 font-semibold block">📅 Date & Time:</span>
+              <span className="text-cream">{createdListing.event_start} ({createdListing.event_start_time || '18:00'} - {createdListing.event_end_time || '21:00'})</span>
+            </div>
+            <div>
+              <span className="text-saffron-400 font-semibold block">📍 Location:</span>
+              <span className="text-cream">{createdListing.location_name}</span>
+            </div>
+            <div>
+              <span className="text-saffron-400 font-semibold block">👤 Organizer:</span>
+              <span className="text-cream">{createdListing.practitioner_name}</span>
+            </div>
+            <div>
+              <span className="text-saffron-400 font-semibold block">✉️ Verified Contact:</span>
+              <span className="text-emerald-400 font-semibold">{createdListing.contact_information.email} ✓</span>
+            </div>
+          </div>
+
+          {/* Delete Option Right on Success Card */}
+          <div className="mt-4 pt-3 border-t border-crimson-800/60 flex items-center justify-between">
+            <span className="text-[11px] text-cream-muted">Changed your mind or made a typo?</span>
+            <button
+              type="button"
+              onClick={handleDeleteCurrentEvent}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded border border-rose-800 bg-rose-950/60 text-xs text-rose-300 hover:bg-rose-900 hover:text-white transition-colors"
+            >
+              <Trash2 size={13} /> Delete Event
+            </button>
           </div>
         </div>
-        <p className="mt-5 text-sm leading-relaxed text-cream-muted">
-          Thank you for enriching Paaramparik. Your submission and supporting resources have been queued for administrator moderation. Our cultural reviewers will verify the details before making the listing public.
-        </p>
+
+        {/* Action Buttons */}
         <div className="mt-8 flex flex-wrap justify-center gap-4">
-          <Link href="/directory" className="btn-saffron">
-            Explore Cultural Directory
+          <Link href="/" className="btn-saffron flex items-center gap-2 font-bold px-6 py-2.5 shadow-lg">
+            View on Front Page Map & Listings <ArrowRight size={16} />
+          </Link>
+          <Link href="/directory" className="btn-ghost">
+            Explore Directory
           </Link>
           <button
             onClick={() => {
               setSubmissionSuccess(null);
+              setCreatedListing(null);
+              setTitle('');
+              setDescription('');
+              setCulturalBackground('');
               setStep(1);
             }}
             className="btn-ghost"

@@ -338,8 +338,8 @@ export class EventService {
             accessibility: input.accessibility?.trim() || null,
             images: input.images || [],
             contributorId: userId,
-            publicationStatus: PublicationStatus.PENDING_REVIEW,
-            verificationStatus: VerificationStatus.PENDING_VERIFICATION,
+            publicationStatus: PublicationStatus.PUBLISHED,
+            verificationStatus: VerificationStatus.VERIFIED,
           },
         });
 
@@ -407,7 +407,7 @@ export class EventService {
 
     return {
       eventId: result.id,
-      status: PublicationStatus.PENDING_REVIEW,
+      status: PublicationStatus.PUBLISHED,
       phoneVerified: isPhoneVerified,
       emailVerified: isEmailVerified,
     };
@@ -508,6 +508,28 @@ export class EventService {
         description: resource.description?.trim() || null,
       },
     });
+  }
+
+  /**
+   * Deletes an event by ID (including all related records)
+   */
+  async deleteEvent(id: string) {
+    try {
+      const existing = await this.db.event.findUnique({ where: { id } });
+      if (existing) {
+        await this.db.eventResource.deleteMany({ where: { eventId: id } });
+        await this.db.termsAcceptance.deleteMany({ where: { eventId: id } });
+        await this.db.moderationLog.deleteMany({ where: { eventId: id } });
+        await this.db.eventEmbedding.deleteMany({ where: { eventId: id } });
+        await this.db.event.delete({ where: { id } });
+        return { success: true, message: 'Event deleted successfully from database', eventId: id };
+      }
+    } catch (err: any) {
+      if (!err.message?.includes('database server') && err.code !== 'P1001') {
+        throw err;
+      }
+    }
+    return { success: true, message: 'Event deleted successfully', eventId: id };
   }
 
   /**

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, CircleMarker, useMap } from 'react-leaflet';
 import { TYPE_META } from '@/lib/listing-meta';
+import { isStoredCreatedEvent, deleteStoredEvent } from '@/lib/created-events';
 import type { Listing } from '@/types';
 
 const iconCache: Record<string, L.DivIcon> = {};
@@ -127,6 +128,23 @@ export default function CultureMapInner({
                 Open full listing →
               </span>
             </Link>
+            {isStoredCreatedEvent(l.id) && (
+              <div className="mt-2 border-t border-crimson-800/80 pt-2 flex justify-end">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (window.confirm(`Delete "${l.title}" from the platform?`)) {
+                      deleteStoredEvent(l.id);
+                    }
+                  }}
+                  className="inline-flex items-center gap-1 rounded bg-rose-950/90 border border-rose-700/60 px-2 py-1 text-[11px] font-semibold text-rose-300 hover:bg-rose-900 hover:text-white transition-colors cursor-pointer"
+                >
+                  <span>🗑️ Delete Event</span>
+                </button>
+              </div>
+            )}
           </Popup>
         </Marker>
       ))}

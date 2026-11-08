@@ -27,6 +27,7 @@ import { TYPE_META, TYPES } from '@/lib/listing-meta';
 import { EMPTY_FILTERS, filterListings, sortListings, type Filters, type Sort } from '@/lib/filter';
 import { haversineKm, storyOfTheDay, cn } from '@/lib/utils';
 import { useGeolocation } from '@/hooks/useGeolocation';
+import { getStoredCreatedEvents, subscribeToEventChanges } from '@/lib/created-events';
 import type { Category, Listing } from '@/types';
 
 export default function Explorer({
@@ -49,6 +50,19 @@ export default function Explorer({
   const [savedCount, setSavedCount] = useState(0);
   const [activeSidebarType, setActiveSidebarType] = useState<string>(isDirectoryPage ? 'directory' : '');
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
+  const [createdEvents, setCreatedEvents] = useState<Listing[]>([]);
+
+  // Synchronize created events with local storage & events
+  useEffect(() => {
+    setCreatedEvents(getStoredCreatedEvents());
+    return subscribeToEventChanges(() => {
+      setCreatedEvents(getStoredCreatedEvents());
+    });
+  }, []);
+
+  const combinedListings = useMemo(() => {
+    return [...createdEvents, ...listings];
+  }, [createdEvents, listings]);
 
   const { position, status, locate } = useGeolocation();
 
@@ -117,17 +131,17 @@ export default function Explorer({
 
   // Curate Featured events & traditions (top 4 events / places)
   const featuredListings = useMemo(() => {
-    const events = listings.filter((l) => l.listing_type === 'event' || l.event_start);
+    const events = combinedListings.filter((l) => l.listing_type === 'event' || l.event_start);
     if (events.length >= 4) return events.slice(0, 4);
-    return listings.slice(0, 4);
-  }, [listings]);
+    return combinedListings.slice(0, 4);
+  }, [combinedListings]);
 
   // Daily cultural story
-  const dailyStory = useMemo(() => storyOfTheDay(listings), [listings]);
+  const dailyStory = useMemo(() => storyOfTheDay(combinedListings), [combinedListings]);
 
   // Filter & sort results
   const results = useMemo(() => {
-    let filtered = filterListings(listings, f);
+    let filtered = filterListings(combinedListings, f);
 
     // If "saved" filter is active, further filter by saved IDs
     if (activeSidebarType === 'saved') {
@@ -141,7 +155,7 @@ export default function Explorer({
     }
 
     return sortListings(filtered, sort, f.q, position);
-  }, [listings, f, sort, position, activeSidebarType]);
+  }, [combinedListings, f, sort, position, activeSidebarType]);
 
   const distances = useMemo(
     () =>
@@ -275,7 +289,7 @@ export default function Explorer({
             /* Section 1: Hero Spotlight & Interactive Map Split */
             <ExploreHeroMapSplit
               listings={results}
-              totalListingsCount={listings.length}
+              totalListingsCount={combinedListings.length}
               categories={categories}
               filters={f}
               onFilterChange={setFilter}

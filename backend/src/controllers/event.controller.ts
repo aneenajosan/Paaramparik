@@ -205,6 +205,20 @@ export class EventController {
       next(err);
     }
   };
+
+  /**
+   * DELETE /api/events/:id
+   * Delete an event by ID
+   */
+  deleteEvent = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+      const result = await this.service.deleteEvent(id);
+      sendSuccess(res, result, 'Event deleted successfully');
+    } catch (err) {
+      next(err);
+    }
+  };
 }
 
 export const eventController = new EventController();

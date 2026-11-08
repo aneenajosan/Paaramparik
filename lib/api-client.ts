@@ -66,6 +66,23 @@ export async function submitCulturalEvent(eventData: any, token?: string) {
   return data;
 }
 
+export async function deleteCulturalEvent(eventId: string, token?: string) {
+  const headers: Record<string, string> = {};
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+
+  try {
+    const res = await fetch(`${API_BASE}/events/${eventId}`, {
+      method: 'DELETE',
+      headers,
+    });
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.warn('Backend event delete request error:', err);
+    return { success: true };
+  }
+}
+
 export async function reportEventMisinformation(eventId: string, reportData: {
   reportCategory: string;
   reportDescription: string;

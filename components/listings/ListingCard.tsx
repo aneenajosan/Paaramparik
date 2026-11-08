@@ -1,9 +1,13 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { MapPin, CalendarDays, Navigation, Clock } from 'lucide-react';
+import { MapPin, CalendarDays, Navigation, Clock, Trash2 } from 'lucide-react';
 import CoverArt from './CoverArt';
 import FavoriteButton from './FavoriteButton';
 import { TYPE_META } from '@/lib/listing-meta';
 import { eventLabel } from '@/lib/utils';
+import { isStoredCreatedEvent, deleteStoredEvent } from '@/lib/created-events';
 import type { Category, Listing } from '@/types';
 
 export default function ListingCard({
@@ -15,6 +19,22 @@ export default function ListingCard({
   category?: Category;
   distanceKm?: number;
 }) {
+  const [isDeletable, setIsDeletable] = useState(false);
+
+  useEffect(() => {
+    setIsDeletable(isStoredCreatedEvent(listing.id));
+  }, [listing.id]);
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const confirmed = window.confirm(
+      `Are you sure you want to delete "${listing.title}"? This cannot be undone.`
+    );
+    if (!confirmed) return;
+    await deleteStoredEvent(listing.id);
+  };
+
   const when = eventLabel(listing);
   const typeMeta = TYPE_META[listing.listing_type];
 
@@ -40,8 +60,20 @@ export default function ListingCard({
           </span>
         </div>
 
-        {/* Top-right favorite button overlay */}
-        <FavoriteButton listingId={listing.id} />
+        {/* Top-right overlay actions: Delete if created + Favorite */}
+        <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5">
+          {isDeletable && (
+            <button
+              type="button"
+              onClick={handleDelete}
+              className="rounded-full bg-rose-950/90 border border-rose-600/70 p-1.5 text-rose-300 hover:bg-rose-900 hover:text-white transition-colors shadow-md cursor-pointer"
+              title="Delete this created event"
+            >
+              <Trash2 size={13} />
+            </button>
+          )}
+          <FavoriteButton listingId={listing.id} />
+        </div>
       </div>
 
       <Link href={`/listings/${listing.slug}`} className="flex flex-1 flex-col p-4 sm:p-5">
