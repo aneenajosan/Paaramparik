@@ -1,46 +1,178 @@
-# Paaramparik
+# Paaramparik — The Living Culture Map
 
-Community-driven cultural discovery map. Next.js 15 (App Router) · TypeScript · Tailwind · Leaflet/OpenStreetMap · Supabase (Auth, Postgres/PostGIS, Storage, RLS).
+Paaramparik is a community-driven guide to the living cultural heritage of Kerala. Explore festivals, performances, places, crafts, and traditions on an interactive map; learn their stories; and help keep the directory useful by contributing information for review.
 
-## 1. Install & run
+The project combines a **Next.js web application**, **Supabase** for the main site’s accounts and cultural directory, and a separate **Express API** backed by PostgreSQL and Prisma for event discovery, contact verification, and moderation workflows.
 
-Requires Node 18.18+ (Node 20+ recommended).
+## What you can do
 
-```bash
-npm install          # installs everything in package.json
-npm run dev          # http://localhost:3000
+- Explore cultural listings on a map or in a searchable, filterable directory.
+- View listing stories, locations, dates, sources, and related experiences.
+- Browse a featured Story of the Day.
+- Create an account and manage your profile.
+- Submit cultural experiences and track their moderation status.
+- Review contributions and manage listings through administrator tools.
+- Discover events through an API with combined filters for art form, event type, locality, date, cost, verification status, and distance.
+- Report misinformation and verify organizer contact details.
+
+The site includes a small bundled demonstration directory for browsing without Supabase. Demo records are clearly identified and should not be treated as independently verified cultural information.
+
+## Technology
+
+| Area | Technologies |
+| --- | --- |
+| Web application | Next.js 15 App Router, React 19, TypeScript |
+| Styling and icons | Tailwind CSS, Lucide |
+| Maps | Leaflet, React Leaflet, OpenStreetMap |
+| Main site data and authentication | Supabase Auth, PostgreSQL, PostGIS, Storage, Row Level Security |
+| Event API | Node.js, Express, TypeScript, Zod |
+| API persistence | PostgreSQL, Prisma |
+| API authentication and email | JWT, Nodemailer |
+| Tests | Jest, Supertest |
+
+## Repository layout
+
+```text
+app/                    Next.js routes (home, directory, listings, account, admin)
+components/             Shared UI, forms, maps, listing cards, and admin tools
+data/                   Bundled categories, demonstration listings, and relationships
+hooks/                  Authentication and geolocation hooks
+lib/                    Data access, filters, validation, and Supabase clients
+public/                 Static assets, fonts, and images
+scripts/                Data-generation utilities
+supabase/
+  migrations/           Main website database schema, policies, and functions
+  seed.sql              Optional seed data for the main website database
+backend/                Separate Express API, Prisma schema, migrations, and tests
+types/                  Shared website TypeScript types
 ```
 
-Dependencies: `next react react-dom @supabase/ssr @supabase/supabase-js leaflet react-leaflet lucide-react` and dev: `typescript tailwindcss@3 postcss autoprefixer @types/*`.
+## Requirements
 
-## 2. What works without Supabase (demo mode)
-Browsing only: home, map, directory, search/filters, listing pages, connections, Story of the Day, using 15 **demonstration records** in `data/` (clearly badged "Demo record — not verified"). Login, signup, contribute, dashboard, profile and admin show a "needs Supabase" notice. Nothing is simulated.
+- Node.js 20 or newer (Node.js 22 recommended).
+- npm.
+- Supabase project credentials to use accounts, submissions, and administrative features.
+- PostgreSQL if you want to run the separate Express API.
 
-## 3. Connect Supabase (enables everything)
-1. Create a project at supabase.com. Copy `.env.local.example` to `.env.local`; add the project URL and **anon** key (Project Settings → API). Never add the service-role key.
-2. SQL editor: run `supabase/migrations/0001_schema.sql` (tables, indexes, PostGIS, RLS, moderation function, storage bucket + policies).
-3. Optional demo data: `npm run seed:sql` regenerates `supabase/seed.sql` from `data/*.json`; run it in the SQL editor.
-4. Auth → Providers: enable Email. (For quick testing, disable "Confirm email".)
-5. Make yourself admin: sign up in the app, then run
-   `update public.profiles set role = 'admin' where email = 'you@example.com';`
-6. Restart `npm run dev`.
+## Run the website locally
 
-## 4. Moderation flow
-Contributor submits → `submissions` row (`pending_review`). Admin opens **/admin/submissions/[id]** → Approve / Request changes / Reject. Decisions go through the `review_submission()` SQL function, which checks `is_admin()`, writes the `reviews` history, and on approval creates the public `listing` (+ sources, media) with status `verified`. Contributors can never self-approve (RLS + trigger).
+Install dependencies and start the Next.js development server:
 
-## 5. Design tokens (from the supplied palette)
-`tailwind.config.ts`: `crimson` (950 #240006, 900 #5C0008, 800 #94000F, 600 #B5001A, 500 #DB0016), `saffron` (950 #241400, 900 #5C2400, 800 #8F3F00, 600 #B84A00, 500 #E06000), `plum` (950 #1A0014, 900 #4D0040, 800 #700050, 600 #8A0068, 500 #A8007A). Values were read by eye from the image, so adjust if you have the exact hex codes. `cream` (#F6EBDD) is the only added neutral, for text.
+```bash
+npm ci
+Copy-Item .env.local.example .env.local
+npm run dev
+```
 
-## 6. Structure
-`app/` routes · `components/{map,listings,forms,admin}` · `lib/` (data, filters, validation, `supabase/`) · `hooks/` · `types/` · `data/` demo JSON · `supabase/` SQL.
+The app is available at [http://localhost:3000](http://localhost:3000). On macOS or Linux, copy the example environment file with:
 
-## 7. Replacing demo data
-Delete `data/listings.json` entries (or just use Supabase, which takes over automatically when configured). Add verified listings through the contribute + approve flow. Coordinates in demo data are approximate.
+```bash
+cp .env.local.example .env.local
+```
 
-## 8. Known limits / assumptions
-- Locality is Thrissur district, Kerala (change in `data/`); `district` field supports more regions.
-- Filtering runs in the browser over the published set (fine for hundreds of listings). Move to SQL queries / PostGIS `ST_DWithin` before scaling.
-- No cover photographs are bundled: cards show a plain palette block until a real image is uploaded. Add licensed images via Supabase Storage.
-- Editing an already-approved listing by contributors is not built; admins edit directly.
-- Email confirmation, password reset UI and notification emails are not implemented ("notify" is in-app via the dashboard).
-- Demo source links are Wikipedia article URLs written from memory; open each and confirm before relying on them.
+Without Supabase credentials, the public browsing experience uses bundled demonstration data. Account, contribution, and administration features require Supabase.
+
+### Configure Supabase
+
+1. Create a Supabase project.
+2. Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` in `.env.local` using the project URL and **public anon key** from the Supabase API settings.
+3. Never put a Supabase service-role key in the Next.js application or commit credentials.
+4. Run [`supabase/migrations/0001_schema.sql`](./supabase/migrations/0001_schema.sql) in the Supabase SQL Editor. It creates the website's tables, PostGIS location support, Row Level Security policies, moderation functions, and storage policies.
+5. To load the bundled examples, optionally run `npm run seed:sql`, then run the generated [`supabase/seed.sql`](./supabase/seed.sql) in the SQL Editor.
+6. Enable the Email provider in Supabase Auth.
+
+To grant administrator access to a trusted account after it has signed up, run this query using that account's email:
+
+```sql
+UPDATE public.profiles
+SET role = 'admin'
+WHERE email = 'you@example.com';
+```
+
+Only trusted operators should be granted the administrator role.
+
+### Website commands
+
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start the Next.js development server |
+| `npm run typecheck` | Check website TypeScript types |
+| `npm run build` | Create a production build of the website |
+| `npm run start` | Serve the production build locally |
+| `npm run seed:sql` | Regenerate `supabase/seed.sql` from `data/` |
+
+## Run the event API locally
+
+The API is a separate application with its own PostgreSQL/Prisma schema. Its database is **not** the same schema as the website's Supabase database.
+
+1. Create a PostgreSQL database for the API.
+2. Create `backend/.env` from `backend/.env.example` and set at least `DATABASE_URL` and a private `JWT_SECRET`.
+3. Install and initialize the API:
+
+```bash
+npm ci --prefix backend
+npm run backend:generate
+npm run backend:push
+npm run backend:seed
+npm run backend:dev
+```
+
+The API listens on [http://localhost:4000](http://localhost:4000). The Next.js app proxies `/api/*` requests to `BACKEND_URL`; for local development it defaults to `http://localhost:4000/api`. If using another API address, set `BACKEND_URL` in `.env.local`, including the `/api` path.
+
+### API routes
+
+All API routes are prefixed with `/api`.
+
+| Route | Purpose |
+| --- | --- |
+| `GET /api/health` | Health check |
+| `GET /api/events` | List published events |
+| `GET /api/events/filter` | Filter and paginate events |
+| `GET /api/events/filter-options` | Return available filter options |
+| `GET /api/events/:id` | Retrieve an event |
+| `POST /api/events` | Submit an event for moderation |
+| `GET /api/events/my-submissions` | List the signed-in contributor’s submissions |
+| `POST /api/auth/register` | Register an API account |
+| `POST /api/auth/login` | Sign in and receive a JWT |
+| `GET /api/auth/me` | Retrieve the signed-in API account |
+| `POST /api/contact/send-otp` | Send a contact verification code |
+| `POST /api/contact/verify-otp` | Verify a contact code |
+| `GET /api/admin/events/pending` | List events awaiting administrator review |
+| `GET /api/admin/reports` | List misinformation reports |
+
+Additional event, report, and administration routes are defined under [`backend/src/routes/`](./backend/src/routes/). See [`backend/docs/API_DOCUMENTATION.md`](./backend/docs/API_DOCUMENTATION.md) for request and response details.
+
+### API commands
+
+| Command | Purpose |
+| --- | --- |
+| `npm run backend:dev` | Start the API in watch mode |
+| `npm run backend:generate` | Generate the Prisma client |
+| `npm run backend:push` | Apply the Prisma schema to a development database |
+| `npm run backend:seed` | Seed the API database with example events |
+| `npm run backend:test` | Run API unit and integration tests |
+| `npm run backend:build` | Compile the API TypeScript |
+
+The API's optional email verification requires a working SMTP provider. For local setup, see the comments in `backend/.env.example`. Never use test credentials or development fallback behavior for a public service.
+
+## How moderation works
+
+Contributions to the website are stored as pending submissions. An administrator reviews each submission and can approve it, request changes, or reject it. Website database policies and the `review_submission()` function enforce the review flow.
+
+The Express API has its own event submission and moderation flow. API submissions are intended to remain pending until an administrator approves them. API accounts and Supabase website accounts are separate authentication systems.
+
+## Trust and data notes
+
+- Demonstration content is for discovery and development, not a substitute for checking authoritative local sources.
+- Confirm dates, locations, access details, and contact information with the organizers before relying on them.
+- Do not publish private contact details or images unless you have permission to do so.
+- Keep secrets in local environment files or hosting-provider secret settings; never commit them.
+- Do not use the Supabase service-role key in client-side code.
+
+## Contributing
+
+Bug reports, corrections, and improvements are welcome. For cultural information, include reliable sources and distinguish documented facts from local tradition or interpretation. For code changes, include a concise description and run the relevant type checks and tests.
+
+## License
+
+No license is currently specified in this repository. Contact the project maintainers before reusing or redistributing the project or its content.
